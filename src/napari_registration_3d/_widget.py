@@ -6,9 +6,17 @@ see: https://napari.org/stable/plugins/guides.html?#widgets
 
 Replace code below according to your needs.
 """
+from functools import partial
 from typing import TYPE_CHECKING
 
-from qtpy.QtWidgets import QHBoxLayout, QPushButton, QWidget
+from qtpy.QtWidgets import (
+    QFileDialog,
+    QFormLayout,
+    QHBoxLayout,
+    QLineEdit,
+    QPushButton,
+    QWidget,
+)
 
 if TYPE_CHECKING:
     pass
@@ -23,11 +31,38 @@ class MainWidget(QWidget):
         super().__init__()
         self.viewer = napari_viewer
 
-        btn = QPushButton("Click me!")
-        btn.clicked.connect(self._on_click)
+        self.src_file_path = QLineEdit(self)
+        self.tgt_file_path = QLineEdit(self)
+        src_browse_btn = QPushButton("Browse")
+        src_browse_btn.clicked.connect(partial(self.select_file, "source"))
+        tgt_browse_btn = QPushButton("Browse")
+        tgt_browse_btn.clicked.connect(partial(self.select_file, "target"))
+        hbox_select_src_file = QHBoxLayout()
+        hbox_select_src_file.addWidget(self.src_file_path)
+        hbox_select_src_file.addWidget(src_browse_btn)
+        hbox_select_tgt_file = QHBoxLayout()
+        hbox_select_tgt_file.addWidget(self.tgt_file_path)
+        hbox_select_tgt_file.addWidget(tgt_browse_btn)
+        start_btn = QPushButton("Start")
+        start_btn.clicked.connect(self._on_click)
 
-        self.setLayout(QHBoxLayout())
-        self.layout().addWidget(btn)
+        main_layout = QFormLayout()
+        main_layout.addRow(hbox_select_src_file)
+        main_layout.addRow(hbox_select_tgt_file)
+        main_layout.addRow(start_btn)
+        self.setLayout(main_layout)
 
     def _on_click(self):
         print("napari has", len(self.viewer.layers), "layers")
+
+    def select_file(self, file_type):
+        if file_type == "source":
+            fileName, _ = QFileDialog.getOpenFileName(
+                self, "Select Source Image", "", "CZI Files (*.czi)"
+            )
+            self.src_file_path.setText(fileName)
+        if file_type == "target":
+            fileName, _ = QFileDialog.getOpenFileName(
+                self, "Select Target Image", "", "CZI Files (*.czi)"
+            )
+            self.tgt_file_path.setText(fileName)
