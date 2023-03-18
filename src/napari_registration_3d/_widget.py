@@ -30,8 +30,8 @@ class MainWidget(QWidget):
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(self, napari_viewer):
         super().__init__()
-        self.viewer1 = napari.Viewer()
         self.viewer = napari_viewer
+        self.viewer1 = napari.Viewer()
 
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
