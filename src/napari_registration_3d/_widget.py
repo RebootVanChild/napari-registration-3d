@@ -19,7 +19,7 @@ from qtpy.QtWidgets import (
 )
 
 if TYPE_CHECKING:
-    pass
+    import napari
 
 
 class MainWidget(QWidget):
@@ -29,6 +29,7 @@ class MainWidget(QWidget):
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(self, napari_viewer):
         super().__init__()
+        self.viewer1 = napari.Viewer()
         self.viewer = napari_viewer
 
         self.src_file_path = QLineEdit(self)
@@ -44,7 +45,7 @@ class MainWidget(QWidget):
         hbox_select_tgt_file.addWidget(self.tgt_file_path)
         hbox_select_tgt_file.addWidget(tgt_browse_btn)
         start_btn = QPushButton("Start")
-        start_btn.clicked.connect(self._on_click)
+        start_btn.clicked.connect(self.load_images)
 
         main_layout = QFormLayout()
         main_layout.addRow(hbox_select_src_file)
@@ -52,7 +53,7 @@ class MainWidget(QWidget):
         main_layout.addRow(start_btn)
         self.setLayout(main_layout)
 
-    def _on_click(self):
+    def load_images(self):
         print("napari has", len(self.viewer.layers), "layers")
 
     def select_file(self, file_type):
