@@ -50,8 +50,8 @@ class MainWidget(QWidget):
         start_btn.clicked.connect(self.load_images)
 
         main_layout = QFormLayout()
-        main_layout.addRow(hbox_select_src_file)
-        main_layout.addRow(hbox_select_tgt_file)
+        main_layout.addRow("Source image", hbox_select_src_file)
+        main_layout.addRow("Target image", hbox_select_tgt_file)
         main_layout.addRow(start_btn)
         self.setLayout(main_layout)
 
@@ -61,6 +61,10 @@ class MainWidget(QWidget):
             self.tgt_viewer = napari.Viewer()
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
+            self.src_viewer.layers[0].colormap = "red"
+            self.tgt_viewer.layers[0].colormap = "green"
+            self.src_viewer.dims.ndisplay = 3
+            self.tgt_viewer.dims.ndisplay = 3
 
     def select_file(self, file_type):
         if file_type == "source":
