@@ -56,9 +56,11 @@ class MainWidget(QWidget):
         self.setLayout(main_layout)
 
     def load_images(self):
-        self.src_viewer = napari.Viewer()
-        self.tgt_viewer = napari.Viewer()
-        print("napari has", len(self.viewer.layers), "layers")
+        if self.src_file_path.text() != "" and self.tgt_file_path.text() != "":
+            self.src_viewer = napari.Viewer()
+            self.tgt_viewer = napari.Viewer()
+            self.src_viewer.open(self.src_file_path.text())
+            self.tgt_viewer.open(self.tgt_file_path.text())
 
     def select_file(self, file_type):
         if file_type == "source":
