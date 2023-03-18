@@ -30,8 +30,9 @@ class MainWidget(QWidget):
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(self, napari_viewer):
         super().__init__()
-        self.viewer = napari_viewer
-        self.viewer1 = napari.Viewer()
+        self.main_viewer = napari_viewer
+        self.src_viewer = None
+        self.tgt_viewer = None
 
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
@@ -55,6 +56,8 @@ class MainWidget(QWidget):
         self.setLayout(main_layout)
 
     def load_images(self):
+        self.src_viewer = napari.Viewer()
+        self.tgt_viewer = napari.Viewer()
         print("napari has", len(self.viewer.layers), "layers")
 
     def select_file(self, file_type):
