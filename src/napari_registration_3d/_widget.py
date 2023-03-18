@@ -9,6 +9,7 @@ Replace code below according to your needs.
 from functools import partial
 from typing import TYPE_CHECKING
 
+import napari
 from qtpy.QtWidgets import (
     QFileDialog,
     QFormLayout,
@@ -19,7 +20,7 @@ from qtpy.QtWidgets import (
 )
 
 if TYPE_CHECKING:
-    import napari
+    pass
 
 
 class MainWidget(QWidget):
