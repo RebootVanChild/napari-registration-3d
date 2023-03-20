@@ -32,7 +32,11 @@ class MainWidget(QWidget):
         super().__init__()
         self.main_viewer = napari_viewer
         self.src_viewer = None
+        self.src_points_layer = None
+        self.src_lines_layer = None
         self.tgt_viewer = None
+        self.tgt_points_layer = None
+        self.tgt_lines_layer = None
 
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
@@ -57,14 +61,19 @@ class MainWidget(QWidget):
 
     def load_images(self):
         if self.src_file_path.text() != "" and self.tgt_file_path.text() != "":
+            # open viewer windows
             self.src_viewer = napari.Viewer()
             self.tgt_viewer = napari.Viewer()
+            # load images
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
             self.src_viewer.layers[0].colormap = "red"
             self.tgt_viewer.layers[0].colormap = "green"
             self.src_viewer.dims.ndisplay = 3
             self.tgt_viewer.dims.ndisplay = 3
+            # point layer
+            self.src_points_layer = self.src_viewer.add_points([])
+            self.tgt_points_layer = self.tgt_viewer.add_points([])
 
     def select_file(self, file_type):
         if file_type == "source":
