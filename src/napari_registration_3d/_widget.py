@@ -86,8 +86,8 @@ class MainWidget(QWidget):
             self.tgt_image_layer.colormap = "green"
             self.src_physical_pixel_size = self.src_viewer.layers[0].extent
             self.tgt_physical_pixel_size = self.tgt_viewer.layers[0].extent
-            self.src_viewer.dims.ndisplay = 3
-            self.tgt_viewer.dims.ndisplay = 3
+            # self.src_viewer.dims.ndisplay = 3
+            # self.tgt_viewer.dims.ndisplay = 3
             # point layer
             self.src_points_layer = self.src_viewer.add_points(name="temp")
             self.tgt_points_layer = self.tgt_viewer.add_points(name="temp")
@@ -109,7 +109,7 @@ class MainWidget(QWidget):
 
     def add_btn_clicked(self):
         print(self.src_viewer.layers["temp"].mode)
-        self.src_viewer.layers["temp"].mode = "add"
+        self.src_points_layer.mode = "add"
         self.tgt_points_layer.mode = "add"
         print(self.src_viewer.layers["temp"])
         print(self.src_viewer.layers["temp"].mode)
