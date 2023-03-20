@@ -78,6 +78,7 @@ class MainWidget(QWidget):
             self.tgt_points_layer = self.tgt_viewer.add_points(
                 [], name="point"
             )
+            print(self.src_points_layer)
 
     def select_file(self, file_type):
         if file_type == "source":
