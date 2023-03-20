@@ -72,8 +72,12 @@ class MainWidget(QWidget):
             self.src_viewer.dims.ndisplay = 3
             self.tgt_viewer.dims.ndisplay = 3
             # point layer
-            self.src_points_layer = self.src_viewer.add_points([])
-            self.tgt_points_layer = self.tgt_viewer.add_points([])
+            self.src_points_layer = self.src_viewer.add_points(
+                [], name="point"
+            )
+            self.tgt_points_layer = self.tgt_viewer.add_points(
+                [], name="point"
+            )
 
     def select_file(self, file_type):
         if file_type == "source":
