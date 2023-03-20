@@ -32,11 +32,15 @@ class MainWidget(QWidget):
         super().__init__()
         self.main_viewer = napari_viewer
         self.src_viewer = None
+        self.src_image_layer = None
         self.src_points_layer = None
         self.src_lines_layer = None
+        self.src_physical_pixel_size = None
         self.tgt_viewer = None
+        self.tgt_image_layer = None
         self.tgt_points_layer = None
         self.tgt_lines_layer = None
+        self.tgt_physical_pixel_size = None
 
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
@@ -52,11 +56,18 @@ class MainWidget(QWidget):
         hbox_select_tgt_file.addWidget(tgt_browse_btn)
         start_btn = QPushButton("Start")
         start_btn.clicked.connect(self.load_images)
+        hbox_controls = QHBoxLayout()
+        add_btn = QPushButton("Add line")
+        add_btn.clicked.connect(self.add_btn_clicked)
+        del_btn = QPushButton("Delete line")
+        hbox_controls.addWidget(add_btn)
+        hbox_controls.addWidget(del_btn)
 
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
         main_layout.addRow(start_btn)
+        main_layout.addRow(hbox_controls)
         self.setLayout(main_layout)
 
     def load_images(self):
@@ -67,18 +78,22 @@ class MainWidget(QWidget):
             # load images
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
-            self.src_viewer.layers[0].colormap = "red"
-            self.tgt_viewer.layers[0].colormap = "green"
+            self.src_image_layer = self.src_viewer.layers[0]
+            self.tgt_image_layer = self.tgt_viewer.layers[0]
+            self.src_image_layer.name = "Source image"
+            self.tgt_image_layer.name = "Target image"
+            self.src_image_layer.colormap = "red"
+            self.tgt_image_layer.colormap = "green"
+            self.src_physical_pixel_size = self.src_viewer.layers[0].extent
+            self.tgt_physical_pixel_size = self.tgt_viewer.layers[0].extent
             self.src_viewer.dims.ndisplay = 3
             self.tgt_viewer.dims.ndisplay = 3
             # point layer
-            self.src_points_layer = self.src_viewer.add_points(
-                [[100, 100, 100], [200, 200, 200]], name="Point"
-            )
-            self.tgt_points_layer = self.tgt_viewer.add_points(
-                [], name="Point"
-            )
-            print(self.src_points_layer.data)
+            self.src_points_layer = self.src_viewer.add_points([], name="temp")
+            self.tgt_points_layer = self.tgt_viewer.add_points([], name="temp")
+            # point layer
+            self.src_lines_layer = self.src_viewer.add_shapes([], name="Lines")
+            self.tgt_lines_layer = self.tgt_viewer.add_shapes([], name="Lines")
 
     def select_file(self, file_type):
         if file_type == "source":
@@ -91,3 +106,7 @@ class MainWidget(QWidget):
                 self, "Select Target Image", "", "CZI Files (*.czi)"
             )
             self.tgt_file_path.setText(fileName)
+
+    def add_btn_clicked(self):
+        self.src_points_layer.mode = "add"
+        self.src_points_layer.mode = "add"
