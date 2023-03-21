@@ -94,8 +94,12 @@ class MainWidget(QWidget):
             self.src_viewer.dims.ndisplay = 3
             self.tgt_viewer.dims.ndisplay = 3
             # lines layer
-            self.src_lines_layer = self.src_viewer.add_shapes(name="Lines")
-            self.tgt_lines_layer = self.tgt_viewer.add_shapes(name="Lines")
+            self.src_lines_layer = self.src_viewer.add_shapes(
+                [[0, 0, 0], [0, 0, 0]], name="Lines"
+            )
+            self.tgt_lines_layer = self.tgt_viewer.add_shapes(
+                [[0, 0, 0], [0, 0, 0]], name="Lines"
+            )
             # point layer, (the selected layer)
             self.src_points_layer = self.src_viewer.add_points(name="temp")
             self.tgt_points_layer = self.tgt_viewer.add_points(name="temp")
@@ -112,7 +116,7 @@ class MainWidget(QWidget):
                         * self.src_physical_pixel_size
                     )
                     print(ray)
-                    self.src_lines_layer.add([ray])
+                    self.src_lines_layer.add(ray, shape_type="line")
 
     def select_file(self, file_type):
         if file_type == "source":
