@@ -74,8 +74,8 @@ class MainWidget(QWidget):
     def load_images(self):
         if self.src_file_path.text() != "" and self.tgt_file_path.text() != "":
             # open viewer windows
-            self.src_viewer = napari.Viewer()
-            self.tgt_viewer = napari.Viewer()
+            self.src_viewer = napari.Viewer(ndisplay=3)
+            self.tgt_viewer = napari.Viewer(ndisplay=3)
             # load images
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
@@ -91,14 +91,12 @@ class MainWidget(QWidget):
             self.tgt_physical_pixel_size = np.array(
                 self.tgt_viewer.layers[0].extent.step
             )
-            self.src_viewer.dims.ndisplay = 3
-            self.tgt_viewer.dims.ndisplay = 3
             # lines layer
             self.src_lines_layer = self.src_viewer.add_shapes(
-                [[0, 0, 0], [0, 0, 0]], name="Lines"
+                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
             )
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
-                [[0, 0, 0], [0, 0, 0]], name="Lines"
+                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
             )
             # point layer, (the selected layer)
             self.src_points_layer = self.src_viewer.add_points(name="temp")
