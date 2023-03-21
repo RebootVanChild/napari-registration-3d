@@ -25,6 +25,9 @@ if TYPE_CHECKING:
 
 
 class MainWidget(QWidget):
+    src_image_layer = None
+    tgt_image_layer = None
+
     # your QWidget.__init__ can optionally request the napari viewer instance
     # in one of two ways:
     # 1. use a parameter called `napari_viewer`, as done here
@@ -33,12 +36,12 @@ class MainWidget(QWidget):
         super().__init__()
         self.main_viewer = napari_viewer
         self.src_viewer = None
-        self.src_image_layer = None
+        # self.src_image_layer = None
         self.src_points_layer = None
         self.src_lines_layer = None
         self.src_physical_pixel_size = None
         self.tgt_viewer = None
-        self.tgt_image_layer = None
+        # self.tgt_image_layer = None
         self.tgt_points_layer = None
         self.tgt_lines_layer = None
         self.tgt_physical_pixel_size = None
