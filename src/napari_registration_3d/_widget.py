@@ -108,8 +108,9 @@ class MainWidget(QWidget):
             self.tgt_file_path.setText(fileName)
 
     def add_btn_clicked(self):
-        print(self.src_viewer.layers["temp"].mode)
+        # change to 'add' mode
+        self.src_points_layer.editable = True
+        self.tgt_points_layer.editable = True
         self.src_points_layer.mode = "add"
         self.tgt_points_layer.mode = "add"
-        print(self.src_viewer.layers["temp"])
         print(self.src_viewer.layers["temp"].mode)
