@@ -25,9 +25,6 @@ if TYPE_CHECKING:
 
 
 class MainWidget(QWidget):
-    src_image_layer = napari.layers.image.image.Image([])
-    tgt_image_layer = napari.layers.image.image.Image([])
-
     # your QWidget.__init__ can optionally request the napari viewer instance
     # in one of two ways:
     # 1. use a parameter called `napari_viewer`, as done here
@@ -36,12 +33,12 @@ class MainWidget(QWidget):
         super().__init__()
         self.main_viewer = napari_viewer
         self.src_viewer = None
-        # self.src_image_layer = None
+        self.src_image_layer = None
         self.src_points_layer = None
         self.src_lines_layer = None
         self.src_physical_pixel_size = None
         self.tgt_viewer = None
-        # self.tgt_image_layer = None
+        self.tgt_image_layer = None
         self.tgt_points_layer = None
         self.tgt_lines_layer = None
         self.tgt_physical_pixel_size = None
@@ -113,15 +110,15 @@ class MainWidget(QWidget):
 
     def add_btn_clicked(self):
         # change to 'add' mode
-        self.src_points_layer.editable = True
-        self.tgt_points_layer.editable = True
-        self.src_points_layer.mode = "add"
-        self.tgt_points_layer.mode = "add"
-        print(self.src_viewer.layers["temp"].mode)
+        # self.src_points_layer.editable = True
+        # self.tgt_points_layer.editable = True
+        # self.src_points_layer.mode = "add"
+        # self.tgt_points_layer.mode = "add"
+        # print(self.src_viewer.layers["temp"].mode)
+        self.src_image_layer.events.data.connect(on_click)
 
 
 # callback function, called on mouse click when volume layer is active
-@MainWidget.src_image_layer.mouse_drag_callbacks.append
 def on_click(layer, event):
     near_point, far_point = layer.get_ray_intersections(
         event.position, event.view_direction, event.dims_displayed
