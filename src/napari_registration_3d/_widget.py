@@ -102,15 +102,8 @@ class MainWidget(QWidget):
                     event.position, event.view_direction, event.dims_displayed
                 )
                 print(near_point, far_point)
-                # if (near_point is not None) and (far_point is not None):
-                #     ray_points = np.linspace(
-                #         near_point, far_point, 50, endpoint=True
-                #     )
-                #     if ray_points.shape[1] != 0:
-                #         print("!0")
-                #         self.src_points_layer.data = ray_points
-                #     else:
-                #         print("0")
+                if (near_point is not None) and (far_point is not None):
+                    self.src_lines_layer.data = [[near_point, far_point]]
 
     def select_file(self, file_type):
         if file_type == "source":
