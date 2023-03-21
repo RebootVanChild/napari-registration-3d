@@ -112,7 +112,7 @@ class MainWidget(QWidget):
                         * self.src_physical_pixel_size
                     )
                     print(ray)
-                    self.src_lines_layer.add(ray, shape_type="line")
+                    self.src_lines_layer.add([ray], shape_type=["line"])
 
     def select_file(self, file_type):
         if file_type == "source":
