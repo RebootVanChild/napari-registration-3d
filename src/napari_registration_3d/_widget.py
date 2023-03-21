@@ -95,10 +95,10 @@ class MainWidget(QWidget):
             self.tgt_viewer.dims.ndisplay = 3
             # lines layer
             self.src_lines_layer = self.src_viewer.add_shapes(
-                [[[0, 0, 0], [0, 0, 0]]], name="Lines"
+                [[[0, 0, 0], [0, 0, 0]]], shape_type="Lines", name="Lines"
             )
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
-                [[[0, 0, 0], [0, 0, 0]]], name="Lines"
+                [[[0, 0, 0], [0, 0, 0]]], shape_type="Lines", name="Lines"
             )
             # point layer, (the selected layer)
             self.src_points_layer = self.src_viewer.add_points(name="temp")
