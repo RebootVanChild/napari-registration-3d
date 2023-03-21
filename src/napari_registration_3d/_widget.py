@@ -29,20 +29,20 @@ class MainWidget(QWidget):
     # in one of two ways:
     # 1. use a parameter called `napari_viewer`, as done here
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
+    src_viewer = None
+    src_image_layer = None
+    src_points_layer = None
+    src_lines_layer = None
+    src_physical_pixel_size = None
+    tgt_viewer = None
+    tgt_image_layer = None
+    tgt_points_layer = None
+    tgt_lines_layer = None
+    tgt_physical_pixel_size = None
+
     def __init__(self, napari_viewer):
         super().__init__()
         self.main_viewer = napari_viewer
-        self.src_viewer = None
-        self.src_image_layer = None
-        self.src_points_layer = None
-        self.src_lines_layer = None
-        self.src_physical_pixel_size = None
-        self.tgt_viewer = None
-        self.tgt_image_layer = None
-        self.tgt_points_layer = None
-        self.tgt_lines_layer = None
-        self.tgt_physical_pixel_size = None
-
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
         src_browse_btn = QPushButton("Browse")
