@@ -95,10 +95,10 @@ class MainWidget(QWidget):
             self.tgt_viewer.dims.ndisplay = 3
             # lines layer
             self.src_lines_layer = self.src_viewer.add_shapes(
-                [[[0, 0], [0, 0]]], name="Lines"
+                [[[0, 0, 0], [0, 0, 0]]], name="Lines"
             )
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
-                [[[0, 0], [0, 0]]], name="Lines"
+                [[[0, 0, 0], [0, 0, 0]]], name="Lines"
             )
             # point layer, (the selected layer)
             self.src_points_layer = self.src_viewer.add_points(name="temp")
@@ -110,12 +110,12 @@ class MainWidget(QWidget):
                 near_point, far_point = layer.get_ray_intersections(
                     event.position, event.view_direction, event.dims_displayed
                 )
-                print(near_point, far_point)
                 if (near_point is not None) and (far_point is not None):
                     ray = (
                         np.array([near_point, far_point])
                         * self.src_physical_pixel_size
                     )
+                    print(ray)
                     self.src_lines_layer.data = [ray]
 
     def select_file(self, file_type):
