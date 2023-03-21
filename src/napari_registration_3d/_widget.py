@@ -76,13 +76,6 @@ class MainWidget(QWidget):
             # open viewer windows
             self.src_viewer = napari.Viewer(ndisplay=3)
             self.tgt_viewer = napari.Viewer(ndisplay=3)
-            # lines layer, add first all 0 data to lock on 3d
-            self.src_lines_layer = self.src_viewer.add_shapes(
-                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
-            )
-            self.tgt_lines_layer = self.tgt_viewer.add_shapes(
-                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
-            )
             # load images
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
@@ -97,6 +90,13 @@ class MainWidget(QWidget):
             )
             self.tgt_physical_pixel_size = np.array(
                 self.tgt_viewer.layers[0].extent.step
+            )
+            # lines layer, add first all 0 data to lock on 3d
+            self.src_lines_layer = self.src_viewer.add_shapes(
+                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
+            )
+            self.tgt_lines_layer = self.tgt_viewer.add_shapes(
+                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
             )
 
             # callback func, called on mouse click when image layer is active
