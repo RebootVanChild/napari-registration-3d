@@ -25,8 +25,8 @@ if TYPE_CHECKING:
 
 
 class MainWidget(QWidget):
-    src_image_layer = napari.layers.image.image.Image
-    tgt_image_layer = napari.layers.image.image.Image
+    src_image_layer = napari.layers.image.image.Image()
+    tgt_image_layer = napari.layers.image.image.Image()
 
     # your QWidget.__init__ can optionally request the napari viewer instance
     # in one of two ways:
