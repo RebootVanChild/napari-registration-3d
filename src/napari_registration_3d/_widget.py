@@ -95,8 +95,22 @@ class MainWidget(QWidget):
             # point layer, (the selected layer)
             self.src_points_layer = self.src_viewer.add_points(name="temp")
             self.tgt_points_layer = self.tgt_viewer.add_points(name="temp")
-            print(self.src_image_layer.events)
-            self.src_image_layer.events.mouse_drag.connect(on_click)
+
+            # callback func, called on mouse click when image layer is active
+            @self.src_image_layer.mouse_drag_callbacks.append
+            def on_click(layer, event):
+                near_point, far_point = layer.get_ray_intersections(
+                    event.position, event.view_direction, event.dims_displayed
+                )
+                if (near_point is not None) and (far_point is not None):
+                    ray_points = np.linspace(
+                        near_point, far_point, 50, endpoint=True
+                    )
+                    if ray_points.shape[1] != 0:
+                        print("!0")
+                        MainWidget.src_points_layer.data = ray_points
+                    else:
+                        print("0")
 
     def select_file(self, file_type):
         if file_type == "source":
@@ -112,23 +126,8 @@ class MainWidget(QWidget):
 
     def add_btn_clicked(self):
         # change to 'add' mode
-        # self.src_points_layer.editable = True
-        # self.tgt_points_layer.editable = True
-        # self.src_points_layer.mode = "add"
-        # self.tgt_points_layer.mode = "add"
-        # print(self.src_viewer.layers["temp"].mode)
-        self.src_image_layer.events.data.connect(on_click)
-
-
-# callback function, called on mouse click when volume layer is active
-def on_click(event):
-    near_point, far_point = MainWidget.src_image_layer.get_ray_intersections(
-        event.position, event.view_direction, event.dims_displayed
-    )
-    if (near_point is not None) and (far_point is not None):
-        ray_points = np.linspace(near_point, far_point, 50, endpoint=True)
-        if ray_points.shape[1] != 0:
-            print("!0")
-            MainWidget.src_points_layer.data = ray_points
-        else:
-            print("0")
+        self.src_points_layer.editable = True
+        self.tgt_points_layer.editable = True
+        self.src_points_layer.mode = "add"
+        self.tgt_points_layer.mode = "add"
+        print(self.src_viewer.layers["temp"].mode)
