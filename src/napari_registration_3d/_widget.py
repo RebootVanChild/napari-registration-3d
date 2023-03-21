@@ -10,6 +10,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 import napari
+import numpy as np
 from qtpy.QtWidgets import (
     QFileDialog,
     QFormLayout,
@@ -114,3 +115,18 @@ class MainWidget(QWidget):
         self.src_points_layer.mode = "add"
         self.tgt_points_layer.mode = "add"
         print(self.src_viewer.layers["temp"].mode)
+
+
+# callback function, called on mouse click when volume layer is active
+@MainWidget.src_image_layer.mouse_drag_callbacks.append
+def on_click(layer, event):
+    near_point, far_point = layer.get_ray_intersections(
+        event.position, event.view_direction, event.dims_displayed
+    )
+    if (near_point is not None) and (far_point is not None):
+        ray_points = np.linspace(near_point, far_point, 50, endpoint=True)
+        if ray_points.shape[1] != 0:
+            print("!0")
+            MainWidget.src_points_layer.data = ray_points
+        else:
+            print("0")
