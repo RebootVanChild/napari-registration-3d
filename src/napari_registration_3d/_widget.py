@@ -10,6 +10,7 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 import napari
+import numpy as np
 from qtpy.QtWidgets import (
     QFileDialog,
     QFormLayout,
@@ -84,13 +85,21 @@ class MainWidget(QWidget):
             self.tgt_image_layer.name = "Target image"
             self.src_image_layer.colormap = "red"
             self.tgt_image_layer.colormap = "green"
-            self.src_physical_pixel_size = self.src_viewer.layers[0].extent
-            self.tgt_physical_pixel_size = self.tgt_viewer.layers[0].extent
+            self.src_physical_pixel_size = np.array(
+                self.src_viewer.layers[0].extent
+            )
+            self.tgt_physical_pixel_size = np.array(
+                self.tgt_viewer.layers[0].extent
+            )
             self.src_viewer.dims.ndisplay = 3
             self.tgt_viewer.dims.ndisplay = 3
             # lines layer
-            self.src_lines_layer = self.src_viewer.add_shapes(name="Lines")
-            self.tgt_lines_layer = self.tgt_viewer.add_shapes(name="Lines")
+            self.src_lines_layer = self.src_viewer.add_shapes(
+                [[[0, 0], [0, 0]]], name="Lines"
+            )
+            self.tgt_lines_layer = self.tgt_viewer.add_shapes(
+                [[[0, 0], [0, 0]]], name="Lines"
+            )
             # point layer, (the selected layer)
             self.src_points_layer = self.src_viewer.add_points(name="temp")
             self.tgt_points_layer = self.tgt_viewer.add_points(name="temp")
@@ -103,7 +112,11 @@ class MainWidget(QWidget):
                 )
                 print(near_point, far_point)
                 if (near_point is not None) and (far_point is not None):
-                    self.src_lines_layer.data = [[near_point, far_point]]
+                    ray = (
+                        np.array([near_point, far_point])
+                        * self.src_physical_pixel_size
+                    )
+                    self.src_lines_layer.data = [ray]
 
     def select_file(self, file_type):
         if file_type == "source":
