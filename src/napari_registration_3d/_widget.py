@@ -118,7 +118,7 @@ class MainWidget(QWidget):
 
 
 # callback function, called on mouse click when volume layer is active
-@MainWidget.self.src_image_layer.mouse_drag_callbacks.append
+@MainWidget.src_image_layer.mouse_drag_callbacks.append
 def on_click(layer, event):
     near_point, far_point = layer.get_ray_intersections(
         event.position, event.view_direction, event.dims_displayed
