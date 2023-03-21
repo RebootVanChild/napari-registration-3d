@@ -86,10 +86,10 @@ class MainWidget(QWidget):
             self.src_image_layer.colormap = "red"
             self.tgt_image_layer.colormap = "green"
             self.src_physical_pixel_size = np.array(
-                self.src_viewer.layers[0].extent
+                self.src_viewer.layers[0].extent.step
             )
             self.tgt_physical_pixel_size = np.array(
-                self.tgt_viewer.layers[0].extent
+                self.tgt_viewer.layers[0].extent.step
             )
             self.src_viewer.dims.ndisplay = 3
             self.tgt_viewer.dims.ndisplay = 3
