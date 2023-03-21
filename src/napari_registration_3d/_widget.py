@@ -91,7 +91,7 @@ class MainWidget(QWidget):
             self.tgt_physical_pixel_size = np.array(
                 self.tgt_viewer.layers[0].extent.step
             )
-            # lines layer
+            # lines layer, add first all 0 data to lock on 3d
             self.src_lines_layer = self.src_viewer.add_shapes(
                 [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
             )
@@ -103,8 +103,8 @@ class MainWidget(QWidget):
             self.tgt_points_layer = self.tgt_viewer.add_points(name="temp")
 
             # callback func, called on mouse click when image layer is active
-            @self.src_image_layer.mouse_drag_callbacks.append
-            def on_click(layer, event):
+            @self.src_image_layer.mouse_double_click_callbacks.append
+            def src_viewer_on_click(layer, event):
                 near_point, far_point = layer.get_ray_intersections(
                     event.position, event.view_direction, event.dims_displayed
                 )
@@ -113,8 +113,19 @@ class MainWidget(QWidget):
                         np.array([near_point, far_point])
                         * self.src_physical_pixel_size
                     )
-                    print(ray)
                     self.src_lines_layer.add(ray, shape_type="line")
+
+            @self.tgt_image_layer.mouse_double_click_callbacks.append
+            def tgt_viewer_on_click(layer, event):
+                near_point, far_point = layer.get_ray_intersections(
+                    event.position, event.view_direction, event.dims_displayed
+                )
+                if (near_point is not None) and (far_point is not None):
+                    ray = (
+                        np.array([near_point, far_point])
+                        * self.tgt_physical_pixel_size
+                    )
+                    self.tgt_lines_layer.add(ray, shape_type="line")
 
     def select_file(self, file_type):
         if file_type == "source":
@@ -129,9 +140,5 @@ class MainWidget(QWidget):
             self.tgt_file_path.setText(fileName)
 
     def add_btn_clicked(self):
-        # change to 'add' mode
-        self.src_points_layer.editable = True
-        self.tgt_points_layer.editable = True
-        self.src_points_layer.mode = "add"
-        self.tgt_points_layer.mode = "add"
-        print(self.src_viewer.layers["temp"].mode)
+        # TODO
+        print("TODO")
