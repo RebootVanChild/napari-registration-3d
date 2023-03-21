@@ -108,7 +108,7 @@ class MainWidget(QWidget):
                     )
                     if ray_points.shape[1] != 0:
                         print("!0")
-                        MainWidget.src_points_layer.data = ray_points
+                        self.src_points_layer.data = ray_points
                     else:
                         print("0")
 
