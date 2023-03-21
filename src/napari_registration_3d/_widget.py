@@ -86,8 +86,8 @@ class MainWidget(QWidget):
             self.tgt_image_layer.colormap = "green"
             self.src_physical_pixel_size = self.src_viewer.layers[0].extent
             self.tgt_physical_pixel_size = self.tgt_viewer.layers[0].extent
-            # self.src_viewer.dims.ndisplay = 3
-            # self.tgt_viewer.dims.ndisplay = 3
+            self.src_viewer.dims.ndisplay = 3
+            self.tgt_viewer.dims.ndisplay = 3
             # lines layer
             self.src_lines_layer = self.src_viewer.add_shapes(name="Lines")
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(name="Lines")
