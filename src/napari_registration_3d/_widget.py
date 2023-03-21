@@ -96,7 +96,7 @@ class MainWidget(QWidget):
             self.src_points_layer = self.src_viewer.add_points(name="temp")
             self.tgt_points_layer = self.tgt_viewer.add_points(name="temp")
 
-            self.src_image_layer.mouse_drag_callbacks.connect(on_click)
+            self.src_image_layer.events.mouse_drag_callbacks.connect(on_click)
 
     def select_file(self, file_type):
         if file_type == "source":
