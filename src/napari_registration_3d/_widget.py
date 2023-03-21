@@ -121,8 +121,8 @@ class MainWidget(QWidget):
 
 
 # callback function, called on mouse click when volume layer is active
-def on_click(layer, event):
-    near_point, far_point = layer.get_ray_intersections(
+def on_click(event):
+    near_point, far_point = MainWidget.src_image_layer.get_ray_intersections(
         event.position, event.view_direction, event.dims_displayed
     )
     if (near_point is not None) and (far_point is not None):
