@@ -93,10 +93,10 @@ class MainWidget(QWidget):
             )
             # lines layer, add first all 0 data to lock on 3d
             self.src_lines_layer = self.src_viewer.add_shapes(
-                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
+                ndim=3, shape_type="line", name="Lines"
             )
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
-                [[0, 0, 0], [0, 0, 0]], shape_type="line", name="Lines"
+                ndim=3, shape_type="line", name="Lines"
             )
 
             # callback func, called on mouse click when image layer is active
