@@ -9,6 +9,7 @@ Replace code below according to your needs.
 from functools import partial
 from typing import TYPE_CHECKING
 
+import _util
 import napari
 import numpy as np
 from qtpy.QtWidgets import (
@@ -137,5 +138,7 @@ class MainWidget(QWidget):
             self.tgt_file_path.setText(fileName)
 
     def align_btn_clicked(self):
-        # TODO
-        print("TODO")
+        rigid_body_4x4_matrix = _util.find_rigid_body_4x4_matrix_from_lines(
+            self.src_lines_layer.data, self.tgt_lines_layer.data
+        )
+        print(rigid_body_4x4_matrix)
