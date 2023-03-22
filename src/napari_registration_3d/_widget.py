@@ -100,8 +100,9 @@ class MainWidget(QWidget):
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
                 ndim=3, shape_type="line", name="Lines"
             )
-            self.src_viewer.layers.selection = 0
-            self.tgt_viewer.layers.selection = 0
+            # set layer selection to image
+            self.src_viewer.layers.selection = {self.src_image_layer}
+            self.tgt_viewer.layers.selection = {self.tgt_image_layer}
 
             # callback func, called on mouse click when image layer is active
             @self.src_image_layer.mouse_double_click_callbacks.append
