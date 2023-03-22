@@ -58,10 +58,10 @@ class MainWidget(QWidget):
         start_btn = QPushButton("Start")
         start_btn.clicked.connect(self.load_images)
         hbox_controls = QHBoxLayout()
-        add_btn = QPushButton("Add line")
-        add_btn.clicked.connect(self.add_btn_clicked)
+        align_btn = QPushButton("Align")
+        align_btn.clicked.connect(self.align_btn_clicked)
         del_btn = QPushButton("Delete line")
-        hbox_controls.addWidget(add_btn)
+        hbox_controls.addWidget(align_btn)
         hbox_controls.addWidget(del_btn)
 
         main_layout = QFormLayout()
@@ -136,6 +136,6 @@ class MainWidget(QWidget):
             )
             self.tgt_file_path.setText(fileName)
 
-    def add_btn_clicked(self):
+    def align_btn_clicked(self):
         # TODO
         print("TODO")
