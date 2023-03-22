@@ -100,6 +100,8 @@ class MainWidget(QWidget):
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
                 ndim=3, shape_type="line", name="Lines"
             )
+            self.src_viewer.layers.selection = 0
+            self.tgt_viewer.layers.selection = 0
 
             # callback func, called on mouse click when image layer is active
             @self.src_image_layer.mouse_double_click_callbacks.append
@@ -139,6 +141,7 @@ class MainWidget(QWidget):
             self.tgt_file_path.setText(fileName)
 
     def align_btn_clicked(self):
+        print("rigid_body_4x4_matrix:")
         rigid_body_4x4_matrix = find_rigid_body_4x4_matrix_from_lines(
             self.src_lines_layer.data, self.tgt_lines_layer.data
         )
