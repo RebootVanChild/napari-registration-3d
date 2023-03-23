@@ -210,6 +210,8 @@ class MainWidget(QWidget):
         print(row)
         self.src_lines_layer.selected_data = {row}
         self.tgt_lines_layer.selected_data = {row}
+        self.src_lines_layer.refresh()
+        self.tgt_lines_layer.refresh()
 
     def delete_line_pair(self):
         row = self.line_list_box.currentRow()
