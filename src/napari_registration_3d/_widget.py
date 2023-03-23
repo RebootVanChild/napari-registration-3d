@@ -227,11 +227,10 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = False
 
     def align_viewers_btn_clicked(self):
-        print(
-            inverse_rotation_of_camera(
-                self.src_transformation_matrix, self.tgt_viewer.camera.angles
-            )
+        new_camera_euler_angles = inverse_rotation_of_camera(
+            self.src_transformation_matrix, self.tgt_viewer.camera.angles
         )
+        self.src_viewer.camera.angles = new_camera_euler_angles
 
     def line_list_box_item_current_row_changed(self):
         row = self.line_list_box.currentRow()
