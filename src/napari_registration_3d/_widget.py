@@ -67,6 +67,7 @@ class MainWidget(QWidget):
 
         # line list box
         self.line_list_box = QListWidget()
+        self.line_list_box.itemClicked.connect(self.line_list_box_item_clicked)
         delete_line_pair_btn = QPushButton("Delete Line Pair")
         delete_line_pair_btn.clicked.connect(self.delete_line_pair)
 
@@ -204,9 +205,14 @@ class MainWidget(QWidget):
         else:
             self.overlay_image_layer.visible = False
 
-    def delete_line_pair(self):
+    def line_list_box_item_clicked(self, item):
         row = self.line_list_box.currentRow()
         print(row)
+        self.src_lines_layer.selected_data = {row}
+        self.tgt_lines_layer.selected_data = {row}
+
+    def delete_line_pair(self):
+        row = self.line_list_box.currentRow()
         self.src_lines_layer.selected_data = {row}
         self.tgt_lines_layer.selected_data = {row}
         self.src_lines_layer.remove_selected()
