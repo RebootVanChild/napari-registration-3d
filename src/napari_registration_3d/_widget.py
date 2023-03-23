@@ -33,13 +33,14 @@ class MainWidget(QWidget):
     # 2. use a type annotation of 'napari.viewer.Viewer' for any parameter
     def __init__(self, napari_viewer):
         super().__init__()
-        self.main_viewer = napari_viewer
+        # self.main_viewer = napari_viewer
         self.src_viewer = None
         self.src_image_layer = None
         self.src_points_layer = None
         self.src_lines_layer = None
         self.src_physical_pixel_size = None
-        self.tgt_viewer = None
+        # self.tgt_viewer = None
+        self.tgt_viewer = napari_viewer
         self.tgt_image_layer = None
         self.tgt_points_layer = None
         self.tgt_lines_layer = None
