@@ -78,7 +78,8 @@ class MainWidget(QWidget):
         if self.src_file_path.text() != "" and self.tgt_file_path.text() != "":
             # open viewer windows
             self.src_viewer = napari.Viewer(ndisplay=3)
-            self.tgt_viewer = napari.Viewer(ndisplay=3)
+            # self.tgt_viewer = napari.Viewer(ndisplay=3)
+            self.tgt_viewer.dims.ndisplay = 3
             # load images
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
