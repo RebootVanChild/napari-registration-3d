@@ -235,4 +235,5 @@ class MainWidget(QWidget):
             self.tgt_lines_layer.selected_data = {row}
             self.src_lines_layer.remove_selected()
             self.tgt_lines_layer.remove_selected()
+            self.clear_line_pair_selection()
             self.line_list_box.takeItem(row)
