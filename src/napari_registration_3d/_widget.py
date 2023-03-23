@@ -64,6 +64,12 @@ class MainWidget(QWidget):
         hbox_select_tgt_file.addWidget(tgt_browse_btn)
         start_btn = QPushButton("Start")
         start_btn.clicked.connect(self.load_images)
+
+        # line list box
+        self.line_list_box = QListWidget()
+        delete_line_pair_btn = QPushButton("Delete Line Pair")
+        delete_line_pair_btn.clicked.connect(self.delete_line_pair)
+
         hbox_controls = QHBoxLayout()
         align_btn = QPushButton("Align")
         align_btn.clicked.connect(self.align_btn_clicked)
@@ -72,15 +78,13 @@ class MainWidget(QWidget):
         hbox_controls.addWidget(align_btn)
         hbox_controls.addWidget(self.overlay_btn)
 
-        # line list box
-        self.line_list_box = QListWidget()
-
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
         main_layout.addRow(start_btn)
-        main_layout.addRow(hbox_controls)
         main_layout.addRow(self.line_list_box)
+        main_layout.addRow(delete_line_pair_btn)
+        main_layout.addRow(hbox_controls)
         self.setLayout(main_layout)
 
     def load_images(self):
@@ -199,3 +203,6 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = True
         else:
             self.overlay_image_layer.visible = False
+
+    def delete_line_pair(self):
+        print(self.line_list_box.currentItem().text())
