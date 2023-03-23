@@ -70,28 +70,31 @@ class MainWidget(QWidget):
         self.line_list_box.itemSelectionChanged.connect(
             self.line_list_box_item_selection_changed
         )
+        hbox_line_list_box_controls = QHBoxLayout()
         clear_line_pair_selection_btn = QPushButton("Clear selection")
         clear_line_pair_selection_btn.clicked.connect(
             self.clear_line_pair_selection
         )
         delete_line_pair_btn = QPushButton("Delete line pair")
         delete_line_pair_btn.clicked.connect(self.delete_line_pair)
+        hbox_line_list_box_controls.addWidget(clear_line_pair_selection_btn)
+        hbox_line_list_box_controls.addWidget(delete_line_pair_btn)
 
-        hbox_controls = QHBoxLayout()
+        hbox_image_controls = QHBoxLayout()
         align_btn = QPushButton("Align")
         align_btn.clicked.connect(self.align_btn_clicked)
         self.overlay_btn = QCheckBox("Overlay")
         self.overlay_btn.stateChanged.connect(self.set_overlay_visibility)
-        hbox_controls.addWidget(align_btn)
-        hbox_controls.addWidget(self.overlay_btn)
+        hbox_image_controls.addWidget(align_btn)
+        hbox_image_controls.addWidget(self.overlay_btn)
 
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
         main_layout.addRow(start_btn)
         main_layout.addRow(self.line_list_box)
-        main_layout.addRow(delete_line_pair_btn)
-        main_layout.addRow(hbox_controls)
+        main_layout.addRow(hbox_line_list_box_controls)
+        main_layout.addRow(hbox_image_controls)
         self.setLayout(main_layout)
 
     def load_images(self):
