@@ -70,7 +70,11 @@ class MainWidget(QWidget):
         self.line_list_box.itemSelectionChanged.connect(
             self.line_list_box_item_selection_changed
         )
-        delete_line_pair_btn = QPushButton("Delete Line Pair")
+        clear_line_pair_selection_btn = QPushButton("Clear selection")
+        clear_line_pair_selection_btn.clicked.connect(
+            self.clear_line_pair_selection
+        )
+        delete_line_pair_btn = QPushButton("Delete line pair")
         delete_line_pair_btn.clicked.connect(self.delete_line_pair)
 
         hbox_controls = QHBoxLayout()
@@ -210,16 +214,20 @@ class MainWidget(QWidget):
     def line_list_box_item_selection_changed(self):
         row = self.line_list_box.currentRow()
         print(row)
-        self.src_lines_layer.selected_data = {row}
-        self.tgt_lines_layer.selected_data = {row}
-        self.src_lines_layer.refresh()
-        self.tgt_lines_layer.refresh()
+        if row != -1:
+            self.src_lines_layer.selected_data = {row}
+            self.tgt_lines_layer.selected_data = {row}
+            self.src_lines_layer.refresh()
+            self.tgt_lines_layer.refresh()
+
+    def clear_line_pair_selection(self):
+        self.line_list_box.clearSelection()
 
     def delete_line_pair(self):
-        print(self.line_list_box.currentRow())
         row = self.line_list_box.currentRow()
-        self.src_lines_layer.selected_data = {row}
-        self.tgt_lines_layer.selected_data = {row}
-        self.src_lines_layer.remove_selected()
-        self.tgt_lines_layer.remove_selected()
-        self.line_list_box.takeItem(row)
+        if row != -1:
+            self.src_lines_layer.selected_data = {row}
+            self.tgt_lines_layer.selected_data = {row}
+            self.src_lines_layer.remove_selected()
+            self.tgt_lines_layer.remove_selected()
+            self.line_list_box.takeItem(row)
