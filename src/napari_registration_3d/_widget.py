@@ -216,12 +216,14 @@ class MainWidget(QWidget):
 
     def line_list_box_item_current_row_changed(self):
         row = self.line_list_box.currentRow()
-        print(row)
         if row != -1:
             self.src_lines_layer.selected_data = {row}
             self.tgt_lines_layer.selected_data = {row}
-            self.src_lines_layer.refresh()
-            self.tgt_lines_layer.refresh()
+        else:
+            self.src_lines_layer.selected_data = {}
+            self.tgt_lines_layer.selected_data = {}
+        self.src_lines_layer.refresh()
+        self.tgt_lines_layer.refresh()
 
     def clear_line_pair_selection(self):
         self.line_list_box.setCurrentRow(-1)
