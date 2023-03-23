@@ -12,10 +12,12 @@ from typing import TYPE_CHECKING
 import napari
 import numpy as np
 from qtpy.QtWidgets import (
+    QCheckBox,
     QFileDialog,
     QFormLayout,
     QHBoxLayout,
     QLineEdit,
+    QListWidget,
     QPushButton,
     QWidget,
 )
@@ -36,15 +38,15 @@ class MainWidget(QWidget):
         # self.main_viewer = napari_viewer
         self.src_viewer = None
         self.src_image_layer = None
-        self.src_points_layer = None
         self.src_lines_layer = None
         self.src_physical_pixel_size = None
         # self.tgt_viewer = None
         self.tgt_viewer = napari_viewer
         self.tgt_image_layer = None
-        self.tgt_points_layer = None
         self.tgt_lines_layer = None
         self.tgt_physical_pixel_size = None
+
+        self.line_pair_index = 0
 
         self.overlay_image_layer = None
 
@@ -65,15 +67,20 @@ class MainWidget(QWidget):
         hbox_controls = QHBoxLayout()
         align_btn = QPushButton("Align")
         align_btn.clicked.connect(self.align_btn_clicked)
-        del_btn = QPushButton("Delete line")
+        self.overlay_btn = QCheckBox("Overlay")
+        self.overlay_btn.stateChanged.connect(self.set_overlay_visibility)
         hbox_controls.addWidget(align_btn)
-        hbox_controls.addWidget(del_btn)
+        hbox_controls.addWidget(self.overlay_btn)
+
+        # line list box
+        self.line_list_box = QListWidget()
 
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
         main_layout.addRow(start_btn)
         main_layout.addRow(hbox_controls)
+        main_layout.addRow(self.line_list_box)
         self.setLayout(main_layout)
 
     def load_images(self):
@@ -85,16 +92,17 @@ class MainWidget(QWidget):
             # load images
             self.src_viewer.open(self.src_file_path.text())
             self.src_image_layer = self.src_viewer.layers[0]
+            self.src_image_layer.name = "Source image"
             self.src_image_layer.colormap = "red"
             self.tgt_viewer.open(self.tgt_file_path.text())
             self.tgt_image_layer = self.tgt_viewer.layers[0]
+            self.tgt_image_layer.name = "Target image"
             self.tgt_image_layer.colormap = "green"
             self.tgt_viewer.open(self.src_file_path.text())
             self.overlay_image_layer = self.tgt_viewer.layers[1]
+            self.overlay_image_layer.name = "Aligned image"
             self.overlay_image_layer.colormap = "red"
             self.overlay_image_layer.visible = False
-            self.src_image_layer.name = "Source image"
-            self.tgt_image_layer.name = "Target image"
             self.src_physical_pixel_size = np.array(
                 self.src_viewer.layers[0].extent.step
             )
@@ -115,27 +123,55 @@ class MainWidget(QWidget):
             # callback func, called on mouse click when image layer is active
             @self.src_image_layer.mouse_double_click_callbacks.append
             def src_viewer_on_click(layer, event):
-                near_point, far_point = layer.get_ray_intersections(
-                    event.position, event.view_direction, event.dims_displayed
-                )
-                if (near_point is not None) and (far_point is not None):
-                    ray = (
-                        np.array([near_point, far_point])
-                        * self.src_physical_pixel_size
+                # if src lines is no more than tgt lines
+                if len(self.src_lines_layer.data) <= len(
+                    self.tgt_lines_layer.data
+                ):
+                    near_point, far_point = layer.get_ray_intersections(
+                        event.position,
+                        event.view_direction,
+                        event.dims_displayed,
                     )
-                    self.src_lines_layer.add(ray, shape_type="line")
+                    if (near_point is not None) and (far_point is not None):
+                        ray = (
+                            np.array([near_point, far_point])
+                            * self.src_physical_pixel_size
+                        )
+                        self.src_lines_layer.add(ray, shape_type="line")
+                        # if src lines match tgt lines, new pair is created
+                        if len(self.src_lines_layer.data) == len(
+                            self.tgt_lines_layer.data
+                        ):
+                            self.line_pair_index += 1
+                            self.line_list_box.addItem(
+                                "line pair " + str(self.line_pair_index)
+                            )
 
             @self.tgt_image_layer.mouse_double_click_callbacks.append
             def tgt_viewer_on_click(layer, event):
-                near_point, far_point = layer.get_ray_intersections(
-                    event.position, event.view_direction, event.dims_displayed
-                )
-                if (near_point is not None) and (far_point is not None):
-                    ray = (
-                        np.array([near_point, far_point])
-                        * self.tgt_physical_pixel_size
+                # if tgt lines is no more than src lines
+                if len(self.tgt_lines_layer.data) <= len(
+                    self.src_lines_layer.data
+                ):
+                    near_point, far_point = layer.get_ray_intersections(
+                        event.position,
+                        event.view_direction,
+                        event.dims_displayed,
                     )
-                    self.tgt_lines_layer.add(ray, shape_type="line")
+                    if (near_point is not None) and (far_point is not None):
+                        ray = (
+                            np.array([near_point, far_point])
+                            * self.tgt_physical_pixel_size
+                        )
+                        self.tgt_lines_layer.add(ray, shape_type="line")
+                        # if tgt lines match src lines, new pair is created
+                        if len(self.src_lines_layer.data) == len(
+                            self.tgt_lines_layer.data
+                        ):
+                            self.line_pair_index += 1
+                            self.line_list_box.addItem(
+                                "line pair " + str(self.line_pair_index)
+                            )
 
     def select_file(self, file_type):
         if file_type == "source":
@@ -156,4 +192,10 @@ class MainWidget(QWidget):
         )
         print(rigid_body_4x4_matrix)
         self.overlay_image_layer.affine = rigid_body_4x4_matrix
-        self.overlay_image_layer.visible = True
+        self.overlay_btn.setChecked(True)
+
+    def set_overlay_visibility(self):
+        if self.overlay_btn.isChecked():
+            self.overlay_image_layer.visible = True
+        else:
+            self.overlay_image_layer.visible = False
