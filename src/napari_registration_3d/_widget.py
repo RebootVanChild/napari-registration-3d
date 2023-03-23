@@ -67,8 +67,8 @@ class MainWidget(QWidget):
 
         # line list box
         self.line_list_box = QListWidget()
-        self.line_list_box.itemSelectionChanged.connect(
-            self.line_list_box_item_selection_changed
+        self.line_list_box.currentRowChanged.connect(
+            self.line_list_box_item_current_row_changed
         )
         hbox_line_list_box_controls = QHBoxLayout()
         clear_line_pair_selection_btn = QPushButton("Clear selection")
@@ -214,7 +214,7 @@ class MainWidget(QWidget):
         else:
             self.overlay_image_layer.visible = False
 
-    def line_list_box_item_selection_changed(self):
+    def line_list_box_item_current_row_changed(self):
         row = self.line_list_box.currentRow()
         print(row)
         if row != -1:
@@ -224,7 +224,7 @@ class MainWidget(QWidget):
             self.tgt_lines_layer.refresh()
 
     def clear_line_pair_selection(self):
-        self.line_list_box.clearSelection()
+        self.line_list_box.setCurrentRow(-1)
 
     def delete_line_pair(self):
         row = self.line_list_box.currentRow()
