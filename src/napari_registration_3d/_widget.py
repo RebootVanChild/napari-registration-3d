@@ -228,7 +228,8 @@ class MainWidget(QWidget):
 
     def align_viewers_btn_clicked(self):
         new_camera_euler_angles = inverse_rotation_of_camera(
-            self.src_transformation_matrix, self.tgt_viewer.camera.angles
+            self.src_transformation_matrix[:3, :3],
+            self.tgt_viewer.camera.angles,
         )
         self.src_viewer.camera.angles = new_camera_euler_angles
 
