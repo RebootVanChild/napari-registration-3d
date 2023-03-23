@@ -2,6 +2,9 @@ import math
 
 import numpy as np
 from scipy.optimize import basinhopping
+from scipy.spatial.transform import Rotation as R
+
+# TODO: Need to improve speed of line matching
 
 
 def rigidBodyToMatrix(rotation, translation):
@@ -83,3 +86,12 @@ def find_rigid_body_4x4_matrix_from_lines(src_lines, tgt_lines):
     )
     m_found = rigidBodyToMatrix(res.x[0:3], res.x[3:6])
     return m_found
+
+
+# new camera: inverse rotation of camera,
+# so that new_camera -observe-> object == camera -observe-> rotated object
+# input: rotation_matrix(zyx), camera_euler_angles(xyz)
+def inverse_rotation_of_camera(rotation_matrix, camera_euler_angles):
+    r = R.from_euler("xyz", camera_euler_angles, degrees=True)
+    camera_initial_matrix = r.as_matrix()
+    print(camera_initial_matrix)

@@ -22,7 +22,10 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
-from ._util import find_rigid_body_4x4_matrix_from_lines
+from ._util import (
+    find_rigid_body_4x4_matrix_from_lines,
+    inverse_rotation_of_camera,
+)
 
 if TYPE_CHECKING:
     pass
@@ -47,6 +50,10 @@ class MainWidget(QWidget):
         self.tgt_physical_pixel_size = None
 
         self.line_pair_index = 0
+        # matrix calculated to apply on src image to align
+        self.src_transformation_matrix = np.array(
+            [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        )
 
         self.overlay_image_layer = None
 
@@ -80,13 +87,16 @@ class MainWidget(QWidget):
         hbox_line_list_box_controls.addWidget(clear_line_pair_selection_btn)
         hbox_line_list_box_controls.addWidget(delete_line_pair_btn)
 
-        hbox_image_controls = QHBoxLayout()
-        align_btn = QPushButton("Align")
-        align_btn.clicked.connect(self.align_btn_clicked)
+        hbox_overlay_controls = QHBoxLayout()
+        align_images_btn = QPushButton("Align images")
+        align_images_btn.clicked.connect(self.align_images_btn_clicked)
         self.overlay_btn = QCheckBox("Overlay")
         self.overlay_btn.stateChanged.connect(self.set_overlay_visibility)
-        hbox_image_controls.addWidget(align_btn)
-        hbox_image_controls.addWidget(self.overlay_btn)
+        hbox_overlay_controls.addWidget(align_images_btn)
+        hbox_overlay_controls.addWidget(self.overlay_btn)
+
+        align_viewers_btn = QPushButton("Align viewers")
+        align_viewers_btn.clicked.connect(self.align_viewers_btn_clicked)
 
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
@@ -94,7 +104,8 @@ class MainWidget(QWidget):
         main_layout.addRow(start_btn)
         main_layout.addRow(self.line_list_box)
         main_layout.addRow(hbox_line_list_box_controls)
-        main_layout.addRow(hbox_image_controls)
+        main_layout.addRow(align_viewers_btn)
+        main_layout.addRow(hbox_overlay_controls)
         self.setLayout(main_layout)
 
     def load_images(self):
@@ -116,6 +127,7 @@ class MainWidget(QWidget):
             self.overlay_image_layer = self.tgt_viewer.layers[1]
             self.overlay_image_layer.name = "Aligned image"
             self.overlay_image_layer.colormap = "red"
+            self.overlay_image_layer.affine = self.src_transformation_matrix
             self.overlay_image_layer.visible = False
             self.src_physical_pixel_size = np.array(
                 self.src_viewer.layers[0].extent.step
@@ -199,13 +211,13 @@ class MainWidget(QWidget):
             )
             self.tgt_file_path.setText(fileName)
 
-    def align_btn_clicked(self):
+    def align_images_btn_clicked(self):
         print("rigid_body_4x4_matrix:")
-        rigid_body_4x4_matrix = find_rigid_body_4x4_matrix_from_lines(
+        self.src_transformation_matrix = find_rigid_body_4x4_matrix_from_lines(
             self.src_lines_layer.data, self.tgt_lines_layer.data
         )
-        print(rigid_body_4x4_matrix)
-        self.overlay_image_layer.affine = rigid_body_4x4_matrix
+        print(self.src_transformation_matrix)
+        self.overlay_image_layer.affine = self.src_transformation_matrix
         self.overlay_btn.setChecked(True)
 
     def set_overlay_visibility(self):
@@ -213,6 +225,13 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = True
         else:
             self.overlay_image_layer.visible = False
+
+    def align_viewers_btn_clicked(self):
+        print(
+            inverse_rotation_of_camera(
+                self.src_transformation_matrix, self.tgt_viewer.camera.angles
+            )
+        )
 
     def line_list_box_item_current_row_changed(self):
         row = self.line_list_box.currentRow()
