@@ -46,6 +46,8 @@ class MainWidget(QWidget):
         self.tgt_lines_layer = None
         self.tgt_physical_pixel_size = None
 
+        self.overlay_image_layer = None
+
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
         src_browse_btn = QPushButton("Browse")
@@ -83,8 +85,11 @@ class MainWidget(QWidget):
             # load images
             self.src_viewer.open(self.src_file_path.text())
             self.tgt_viewer.open(self.tgt_file_path.text())
+            self.tgt_viewer.open(self.src_file_path.text())
             self.src_image_layer = self.src_viewer.layers[0]
             self.tgt_image_layer = self.tgt_viewer.layers[0]
+            self.overlay_image_layer = self.tgt_viewer.layers[1]
+            self.overlay_image_layer.visible = False
             self.src_image_layer.name = "Source image"
             self.tgt_image_layer.name = "Target image"
             self.src_image_layer.colormap = "red"
@@ -149,3 +154,5 @@ class MainWidget(QWidget):
             self.src_lines_layer.data, self.tgt_lines_layer.data
         )
         print(rigid_body_4x4_matrix)
+        self.overlay_image_layer.affine = rigid_body_4x4_matrix
+        self.overlay_image_layer.visible = True
