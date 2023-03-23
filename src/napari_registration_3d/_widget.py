@@ -205,4 +205,4 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = False
 
     def delete_line_pair(self):
-        print(self.line_list_box.currentItem().text())
+        print(self.line_list_box.currentItem())
