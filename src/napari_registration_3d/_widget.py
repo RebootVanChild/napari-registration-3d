@@ -127,6 +127,7 @@ class MainWidget(QWidget):
             self.overlay_image_layer = self.tgt_viewer.layers[1]
             self.overlay_image_layer.name = "Aligned image"
             self.overlay_image_layer.colormap = "red"
+            self.overlay_image_layer.blending = "additive"
             self.overlay_image_layer.affine = self.src_transformation_matrix
             self.overlay_image_layer.visible = False
             self.src_physical_pixel_size = np.array(

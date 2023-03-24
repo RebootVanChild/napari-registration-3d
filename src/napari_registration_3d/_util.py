@@ -94,11 +94,9 @@ def find_rigid_body_4x4_matrix_from_lines(src_lines, tgt_lines):
 def inverse_rotation_of_camera(rotation_matrix, camera_euler_angles):
     r = R.from_euler("xyz", camera_euler_angles, degrees=True)
     camera_initial_matrix = r.as_matrix()
-    print("camera_initial_matrix", camera_initial_matrix)
     rotation_matrix_xyz = rot_matrix_zyx_to_xyz(rotation_matrix)
     inv_rotation_matrix_xyz = np.linalg.inv(rotation_matrix_xyz)
     camera_new_matrix = inv_rotation_matrix_xyz.dot(camera_initial_matrix)
-    print("camera_new_matrix", camera_new_matrix)
     new_r = R.from_matrix(camera_new_matrix)
     new_camera_euler_angles = new_r.as_euler("xyz", degrees=True)
     return new_camera_euler_angles
