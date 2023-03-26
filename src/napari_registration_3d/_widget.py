@@ -23,8 +23,9 @@ from qtpy.QtWidgets import (
 )
 
 from ._util import (
-    find_rigid_body_4x4_matrix_from_lines,
+    get_affine_matrix_from_landmarks,
     inverse_rotation_of_camera,
+    mid_point_of_shortest_line,
 )
 
 if TYPE_CHECKING:
@@ -51,7 +52,7 @@ class MainWidget(QWidget):
         self.tgt_points_layer = None
         self.tgt_physical_pixel_size = None
 
-        self.line_pair_index = 0
+        self.landmark_pair_index = 0
         # matrix calculated to apply on src image to align
         self.src_transformation_matrix = np.array(
             [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -74,20 +75,22 @@ class MainWidget(QWidget):
         start_btn = QPushButton("Start")
         start_btn.clicked.connect(self.load_images)
 
-        # line list box
-        self.line_list_box = QListWidget()
-        self.line_list_box.currentRowChanged.connect(
-            self.line_list_box_item_current_row_changed
+        # landmark list box
+        self.landmark_list_box = QListWidget()
+        self.landmark_list_box.currentRowChanged.connect(
+            self.landmark_list_box_item_current_row_changed
         )
-        hbox_line_list_box_controls = QHBoxLayout()
+        hbox_landmark_list_box_controls = QHBoxLayout()
         clear_line_pair_selection_btn = QPushButton("Clear selection")
         clear_line_pair_selection_btn.clicked.connect(
             self.clear_line_pair_selection
         )
         delete_line_pair_btn = QPushButton("Delete line pair")
         delete_line_pair_btn.clicked.connect(self.delete_line_pair)
-        hbox_line_list_box_controls.addWidget(clear_line_pair_selection_btn)
-        hbox_line_list_box_controls.addWidget(delete_line_pair_btn)
+        hbox_landmark_list_box_controls.addWidget(
+            clear_line_pair_selection_btn
+        )
+        hbox_landmark_list_box_controls.addWidget(delete_line_pair_btn)
 
         hbox_overlay_controls = QHBoxLayout()
         align_images_btn = QPushButton("Align images")
@@ -104,8 +107,8 @@ class MainWidget(QWidget):
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
         main_layout.addRow(start_btn)
-        main_layout.addRow(self.line_list_box)
-        main_layout.addRow(hbox_line_list_box_controls)
+        main_layout.addRow(self.landmark_list_box)
+        main_layout.addRow(hbox_landmark_list_box_controls)
         main_layout.addRow(align_viewers_btn)
         main_layout.addRow(hbox_overlay_controls)
         self.setLayout(main_layout)
@@ -163,9 +166,9 @@ class MainWidget(QWidget):
             # callback func, called on mouse click when image layer is active
             @self.src_image_layer.mouse_double_click_callbacks.append
             def src_viewer_on_click(layer, event):
-                # if src lines is no more than tgt lines
-                if len(self.src_lines_layer.data) <= len(
-                    self.tgt_lines_layer.data
+                # if src points is no more than tgt points
+                if len(self.src_points_layer.data) <= len(
+                    self.tgt_points_layer.data
                 ):
                     near_point, far_point = layer.get_ray_intersections(
                         event.position,
@@ -173,25 +176,39 @@ class MainWidget(QWidget):
                         event.dims_displayed,
                     )
                     if (near_point is not None) and (far_point is not None):
-                        ray = (
+                        new_line = (
                             np.array([near_point, far_point])
                             * self.src_physical_pixel_size
                         )
-                        self.src_lines_layer.add(ray, shape_type="line")
-                        # if src lines match tgt lines, new pair is created
-                        if len(self.src_lines_layer.data) == len(
-                            self.tgt_lines_layer.data
-                        ):
-                            self.line_pair_index += 1
-                            self.line_list_box.addItem(
-                                "line pair " + str(self.line_pair_index)
+                        # if no line yet
+                        if len(self.src_lines_layer.data) == 0:
+                            self.src_lines_layer.add(
+                                new_line, shape_type="line"
                             )
+                        # if already a line exist
+                        else:
+                            existed_line = self.src_points_layer.data[0]
+                            new_point = mid_point_of_shortest_line(
+                                existed_line, new_line
+                            )
+                            self.src_lines_layer.data = []
+                            self.src_points_layer.add(new_point)
+                            # if src points match tgt points
+                            # new pair is created
+                            if len(self.src_points_layer.data) == len(
+                                self.tgt_points_layer.data
+                            ):
+                                self.landmark_pair_index += 1
+                                self.landmark_list_box.addItem(
+                                    "landmark pair "
+                                    + str(self.landmarks_pair_index)
+                                )
 
             @self.tgt_image_layer.mouse_double_click_callbacks.append
             def tgt_viewer_on_click(layer, event):
-                # if tgt lines is no more than src lines
-                if len(self.tgt_lines_layer.data) <= len(
-                    self.src_lines_layer.data
+                # if tgt points is no more than src points
+                if len(self.tgt_points_layer.data) <= len(
+                    self.src_points_layer.data
                 ):
                     near_point, far_point = layer.get_ray_intersections(
                         event.position,
@@ -199,19 +216,33 @@ class MainWidget(QWidget):
                         event.dims_displayed,
                     )
                     if (near_point is not None) and (far_point is not None):
-                        ray = (
+                        new_line = (
                             np.array([near_point, far_point])
                             * self.tgt_physical_pixel_size
                         )
-                        self.tgt_lines_layer.add(ray, shape_type="line")
-                        # if tgt lines match src lines, new pair is created
-                        if len(self.src_lines_layer.data) == len(
-                            self.tgt_lines_layer.data
-                        ):
-                            self.line_pair_index += 1
-                            self.line_list_box.addItem(
-                                "line pair " + str(self.line_pair_index)
+                        # if no line yet
+                        if len(self.tgt_lines_layer.data) == 0:
+                            self.tgt_lines_layer.add(
+                                new_line, shape_type="line"
                             )
+                        # if already a line exist
+                        else:
+                            existed_line = self.tgt_points_layer.data[0]
+                            new_point = mid_point_of_shortest_line(
+                                existed_line, new_line
+                            )
+                            self.tgt_lines_layer.data = []
+                            self.tgt_points_layer.add(new_point)
+                            # if tgt points match src points
+                            # new pair is created
+                            if len(self.tgt_points_layer.data) == len(
+                                self.src_points_layer.data
+                            ):
+                                self.landmark_pair_index += 1
+                                self.landmark_list_box.addItem(
+                                    "landmark pair "
+                                    + str(self.landmarks_pair_index)
+                                )
 
     def select_file(self, file_type):
         if file_type == "source":
@@ -227,7 +258,7 @@ class MainWidget(QWidget):
 
     def align_images_btn_clicked(self):
         print("rigid_body_4x4_matrix:")
-        self.src_transformation_matrix = find_rigid_body_4x4_matrix_from_lines(
+        self.src_transformation_matrix = get_affine_matrix_from_landmarks(
             self.src_lines_layer.data, self.tgt_lines_layer.data
         )
         print(self.src_transformation_matrix)
@@ -248,8 +279,8 @@ class MainWidget(QWidget):
         )
         self.src_viewer.camera.angles = new_camera_euler_angles
 
-    def line_list_box_item_current_row_changed(self):
-        row = self.line_list_box.currentRow()
+    def landmark_list_box_item_current_row_changed(self):
+        row = self.landmark_list_box.currentRow()
         if row != -1:
             self.src_lines_layer.selected_data = {row}
             self.tgt_lines_layer.selected_data = {row}
@@ -260,14 +291,14 @@ class MainWidget(QWidget):
         self.tgt_lines_layer.refresh()
 
     def clear_line_pair_selection(self):
-        self.line_list_box.setCurrentRow(-1)
+        self.landmark_list_box.setCurrentRow(-1)
 
     def delete_line_pair(self):
-        row = self.line_list_box.currentRow()
+        row = self.landmark_list_box.currentRow()
         if row != -1:
             self.src_lines_layer.selected_data = {row}
             self.tgt_lines_layer.selected_data = {row}
             self.src_lines_layer.remove_selected()
             self.tgt_lines_layer.remove_selected()
             self.clear_line_pair_selection()
-            self.line_list_box.takeItem(row)
+            self.landmark_list_box.takeItem(row)
