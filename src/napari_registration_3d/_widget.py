@@ -259,7 +259,7 @@ class MainWidget(QWidget):
     def align_images_btn_clicked(self):
         print("affine matrix:")
         self.src_transformation_matrix = get_affine_matrix_from_landmarks(
-            self.src_lines_layer.data, self.tgt_lines_layer.data
+            self.src_points_layer.data, self.tgt_points_layer.data
         )
         print(self.src_transformation_matrix)
         self.overlay_image_layer.affine = self.src_transformation_matrix
