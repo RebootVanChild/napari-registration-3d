@@ -122,6 +122,11 @@ class MainWidget(QWidget):
             self.src_image_layer = self.src_viewer.layers[0]
             self.src_image_layer.name = "Source image"
             self.src_image_layer.colormap = "red"
+            # target image
+            self.tgt_viewer.open(self.tgt_file_path.text())
+            self.tgt_image_layer = self.tgt_viewer.layers[0]
+            self.tgt_image_layer.name = "Target image"
+            self.tgt_image_layer.colormap = "green"
             # overlay image
             self.tgt_viewer.open(self.src_file_path.text())
             self.overlay_image_layer = self.tgt_viewer.layers[1]
@@ -130,11 +135,7 @@ class MainWidget(QWidget):
             self.overlay_image_layer.blending = "additive"
             self.overlay_image_layer.affine = self.src_transformation_matrix
             self.overlay_image_layer.visible = False
-            # target image
-            self.tgt_viewer.open(self.tgt_file_path.text())
-            self.tgt_image_layer = self.tgt_viewer.layers[0]
-            self.tgt_image_layer.name = "Target image"
-            self.tgt_image_layer.colormap = "green"
+            # image info
             self.src_physical_pixel_size = np.array(
                 self.src_viewer.layers[0].extent.step
             )
@@ -240,6 +241,7 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = False
 
     def align_viewers_btn_clicked(self):
+        # TODO: incorrect transformation
         new_camera_euler_angles = inverse_rotation_of_camera(
             self.src_transformation_matrix[:3, :3],
             self.tgt_viewer.camera.angles,
