@@ -42,11 +42,13 @@ class MainWidget(QWidget):
         self.src_viewer = None
         self.src_image_layer = None
         self.src_lines_layer = None
+        self.src_points_layer = None
         self.src_physical_pixel_size = None
         # self.tgt_viewer = None
         self.tgt_viewer = napari_viewer
         self.tgt_image_layer = None
         self.tgt_lines_layer = None
+        self.tgt_points_layer = None
         self.tgt_physical_pixel_size = None
 
         self.line_pair_index = 0
@@ -115,14 +117,12 @@ class MainWidget(QWidget):
             # self.tgt_viewer = napari.Viewer(ndisplay=3)
             self.tgt_viewer.dims.ndisplay = 3
             # load images
+            # source image
             self.src_viewer.open(self.src_file_path.text())
             self.src_image_layer = self.src_viewer.layers[0]
             self.src_image_layer.name = "Source image"
             self.src_image_layer.colormap = "red"
-            self.tgt_viewer.open(self.tgt_file_path.text())
-            self.tgt_image_layer = self.tgt_viewer.layers[0]
-            self.tgt_image_layer.name = "Target image"
-            self.tgt_image_layer.colormap = "green"
+            # overlay image
             self.tgt_viewer.open(self.src_file_path.text())
             self.overlay_image_layer = self.tgt_viewer.layers[1]
             self.overlay_image_layer.name = "Aligned image"
@@ -130,18 +130,30 @@ class MainWidget(QWidget):
             self.overlay_image_layer.blending = "additive"
             self.overlay_image_layer.affine = self.src_transformation_matrix
             self.overlay_image_layer.visible = False
+            # target image
+            self.tgt_viewer.open(self.tgt_file_path.text())
+            self.tgt_image_layer = self.tgt_viewer.layers[0]
+            self.tgt_image_layer.name = "Target image"
+            self.tgt_image_layer.colormap = "green"
             self.src_physical_pixel_size = np.array(
                 self.src_viewer.layers[0].extent.step
             )
             self.tgt_physical_pixel_size = np.array(
                 self.tgt_viewer.layers[0].extent.step
             )
-            # lines layer, add first all 0 data to lock on 3d
+            # lines layer
             self.src_lines_layer = self.src_viewer.add_shapes(
-                ndim=3, shape_type="line", name="Lines"
+                ndim=3, shape_type="line", name="temp line"
             )
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
-                ndim=3, shape_type="line", name="Lines"
+                ndim=3, shape_type="line", name="temp line"
+            )
+            # point layer
+            self.src_points_layer = self.src_viewer.add_points(
+                ndim=3, name="Landmarks"
+            )
+            self.tgt_points_layer = self.tgt_viewer.add_points(
+                ndim=3, name="Landmarks"
             )
             # set layer selection to image
             self.src_viewer.layers.selection = {self.src_image_layer}
