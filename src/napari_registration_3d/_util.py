@@ -18,12 +18,6 @@ def mid_point_of_shortest_line(line1, line2):
     return midpoint
 
 
-# line(dot, direction)
-def dist_between_lines(line1, line2):
-    n = np.cross(line1[1] - line1[0], line2[1] - line2[0])
-    return np.linalg.norm(n.dot(line2[0] - line1[0])) / np.linalg.norm(n)
-
-
 def get_affine_matrix_from_landmarks(
     source_points_landmarks, target_points_landmarks
 ):

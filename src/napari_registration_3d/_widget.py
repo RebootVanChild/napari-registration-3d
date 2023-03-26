@@ -201,7 +201,7 @@ class MainWidget(QWidget):
                                 self.landmark_pair_index += 1
                                 self.landmark_list_box.addItem(
                                     "landmark pair "
-                                    + str(self.landmarks_pair_index)
+                                    + str(self.landmark_pair_index)
                                 )
 
             @self.tgt_image_layer.mouse_double_click_callbacks.append
@@ -241,7 +241,7 @@ class MainWidget(QWidget):
                                 self.landmark_pair_index += 1
                                 self.landmark_list_box.addItem(
                                     "landmark pair "
-                                    + str(self.landmarks_pair_index)
+                                    + str(self.landmark_pair_index)
                                 )
 
     def select_file(self, file_type):
@@ -257,7 +257,7 @@ class MainWidget(QWidget):
             self.tgt_file_path.setText(fileName)
 
     def align_images_btn_clicked(self):
-        print("rigid_body_4x4_matrix:")
+        print("affine matrix:")
         self.src_transformation_matrix = get_affine_matrix_from_landmarks(
             self.src_lines_layer.data, self.tgt_lines_layer.data
         )
@@ -282,23 +282,23 @@ class MainWidget(QWidget):
     def landmark_list_box_item_current_row_changed(self):
         row = self.landmark_list_box.currentRow()
         if row != -1:
-            self.src_lines_layer.selected_data = {row}
-            self.tgt_lines_layer.selected_data = {row}
+            self.src_points_layer.selected_data = {row}
+            self.tgt_points_layer.selected_data = {row}
         else:
-            self.src_lines_layer.selected_data = {}
-            self.tgt_lines_layer.selected_data = {}
-        self.src_lines_layer.refresh()
-        self.tgt_lines_layer.refresh()
+            self.src_points_layer.selected_data = {}
+            self.tgt_points_layer.selected_data = {}
+        self.src_points_layer.refresh()
+        self.tgt_points_layer.refresh()
 
-    def clear_line_pair_selection(self):
+    def clear_point_pair_selection(self):
         self.landmark_list_box.setCurrentRow(-1)
 
     def delete_line_pair(self):
         row = self.landmark_list_box.currentRow()
         if row != -1:
-            self.src_lines_layer.selected_data = {row}
-            self.tgt_lines_layer.selected_data = {row}
-            self.src_lines_layer.remove_selected()
-            self.tgt_lines_layer.remove_selected()
-            self.clear_line_pair_selection()
+            self.src_points_layer.selected_data = {row}
+            self.tgt_points_layer.selected_data = {row}
+            self.src_points_layer.remove_selected()
+            self.tgt_points_layer.remove_selected()
+            self.clear_point_pair_selection()
             self.landmark_list_box.takeItem(row)
