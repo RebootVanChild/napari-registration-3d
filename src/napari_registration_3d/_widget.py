@@ -187,7 +187,7 @@ class MainWidget(QWidget):
                             )
                         # if already a line exist
                         else:
-                            existed_line = self.src_points_layer.data[0]
+                            existed_line = self.src_lines_layer.data[0]
                             new_point = mid_point_of_shortest_line(
                                 existed_line, new_line
                             )
@@ -227,7 +227,7 @@ class MainWidget(QWidget):
                             )
                         # if already a line exist
                         else:
-                            existed_line = self.tgt_points_layer.data[0]
+                            existed_line = self.tgt_lines_layer.data[0]
                             new_point = mid_point_of_shortest_line(
                                 existed_line, new_line
                             )
