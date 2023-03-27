@@ -85,7 +85,7 @@ class MainWidget(QWidget):
         clear_line_pair_selection_btn.clicked.connect(
             self.clear_point_pair_selection
         )
-        delete_line_pair_btn = QPushButton("Delete line pair")
+        delete_line_pair_btn = QPushButton("Delete landmark pair")
         delete_line_pair_btn.clicked.connect(self.delete_line_pair)
         hbox_landmark_list_box_controls.addWidget(
             clear_line_pair_selection_btn
