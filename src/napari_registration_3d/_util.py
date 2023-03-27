@@ -66,6 +66,7 @@ def inverse_rotation_of_camera(rotation_matrix, camera_euler_angles):
     new_r = R.from_matrix(camera_new_matrix)
     new_camera_euler_angles = new_r.as_euler("xyz", degrees=True)
     print("new_camera_euler_angles: ", new_camera_euler_angles)
+    print("finished")
     return new_camera_euler_angles
 
 
