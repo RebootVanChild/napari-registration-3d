@@ -52,13 +52,20 @@ def get_affine_matrix_from_landmarks(
 # so that new_camera -observe-> object == camera -observe-> rotated object
 # input: rotation_matrix(zyx), camera_euler_angles(xyz)
 def inverse_rotation_of_camera(rotation_matrix, camera_euler_angles):
+    print("camera_euler_angles: ", camera_euler_angles)
+    print("rotation_matrix: ", rotation_matrix)
     r = R.from_euler("xyz", camera_euler_angles, degrees=True)
     camera_initial_matrix = r.as_matrix()
+    print("camera_initial_matrix: ", camera_initial_matrix)
     rotation_matrix_xyz = rot_matrix_zyx_to_xyz(rotation_matrix)
+    print("rotation_matrix_xyz: ", rotation_matrix_xyz)
     inv_rotation_matrix_xyz = np.linalg.inv(rotation_matrix_xyz)
+    print("inv_rotation_matrix_xyz: ", inv_rotation_matrix_xyz)
     camera_new_matrix = inv_rotation_matrix_xyz.dot(camera_initial_matrix)
+    print("camera_new_matrix: ", camera_new_matrix)
     new_r = R.from_matrix(camera_new_matrix)
     new_camera_euler_angles = new_r.as_euler("xyz", degrees=True)
+    print("new_camera_euler_angles: ", new_camera_euler_angles)
     return new_camera_euler_angles
 
 
