@@ -48,6 +48,7 @@ class MainWidget(QWidget):
         self.tgt_points_layer = None
         self.tgt_physical_pixel_size = None
 
+        self.src_line = np.empty((0, 2, 3))
         self.landmark_pair_index = 0
         self.src_landmarks = np.empty((0, 3))
         self.tgt_landmarks = np.empty((0, 3))
@@ -185,31 +186,29 @@ class MainWidget(QWidget):
                         )
                         # if no line yet
                         if len(self.src_lines_layer.data) == 0:
+                            self.src_line = np.append(
+                                self.src_line, [new_line], axis=0
+                            )
                             self.src_lines_layer.add(
                                 new_line, shape_type="line"
                             )
+                            self.refresh_src_lines()
                         # if already a line exist
                         else:
-                            existed_line = self.src_lines_layer.data[0]
+                            # existed_line = self.src_lines_layer.data[0]
+                            existed_line = self.src_line[0]
                             new_point = mid_point_of_shortest_line(
                                 existed_line, new_line
                             )
                             self.src_lines_layer.data = []
                             # if src is view in transformed
                             if self.src_transform_checkbox.isChecked():
-                                print(new_point)
                                 new_point = np.dot(
                                     np.linalg.inv(
                                         self.src_transformation_matrix
                                     ),
                                     np.append(new_point, 1),
                                 )[:-1]
-                                print(
-                                    np.linalg.inv(
-                                        self.src_transformation_matrix
-                                    )
-                                )
-                                print(new_point)
                             self.src_landmarks = np.append(
                                 self.src_landmarks, [new_point], axis=0
                             )
@@ -303,6 +302,20 @@ class MainWidget(QWidget):
                 [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
             )
         self.refresh_src_points()
+
+    def refresh_src_lines(self):
+        # if src_lines is not empty
+        if len(self.src_line) != 0:
+            if self.src_transform_checkbox.isChecked():
+                existed_line = self.src_line[0]
+                ones = np.ones((2, 1))
+                transformed_existed_line = np.dot(
+                    self.src_transformation_matrix,
+                    np.hstack((existed_line, ones)).T,
+                )[:-1].T
+                self.src_lines_layer.data = transformed_existed_line
+            else:
+                self.src_lines_layer.data = self.src_line
 
     def refresh_src_points(self):
         if self.src_transform_checkbox.isChecked():
