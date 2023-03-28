@@ -291,6 +291,8 @@ class MainWidget(QWidget):
         )
         print(self.src_transformation_matrix)
         self.overlay_image_layer.affine = self.src_transformation_matrix
+        self.set_src_transform()
+        self.refresh_tgt_points()
         self.overlay_checkbox.setChecked(True)
 
     def set_src_transform(self):
