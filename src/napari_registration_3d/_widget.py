@@ -325,6 +325,7 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = False
 
     def align_viewers_btn_clicked(self):
+        self.src_viewer.reset_view()
         self.src_viewer.camera.angles = self.tgt_viewer.camera.angles
         self.src_viewer.camera.zoom = self.tgt_viewer.camera.zoom
 
