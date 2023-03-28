@@ -268,7 +268,8 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = False
 
     def align_viewers_btn_clicked(self):
-        self.src_viewer.camera = self.tgt_viewer.camera
+        self.src_viewer.camera.angles = self.tgt_viewer.camera.angles
+        self.src_viewer.camera.zoom = self.tgt_viewer.camera.zoom
 
     def landmark_list_box_item_current_row_changed(self):
         row = self.landmark_list_box.currentRow()
