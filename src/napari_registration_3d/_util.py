@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial.transform import Rotation as R
 
 
 # mid point of shortest line
@@ -46,28 +45,6 @@ def get_affine_matrix_from_landmarks(
     matrix = np.append(x.reshape(3, 4), [[0.0, 0.0, 0.0, 1.0]], axis=0)
     print(matrix)
     return matrix
-
-
-# new camera: inverse rotation of camera,
-# so that new_camera -observe-> object == camera -observe-> rotated object
-# input: rotation_matrix(zyx), camera_euler_angles(xyz)
-def inverse_rotation_of_camera(rotation_matrix, camera_euler_angles):
-    print("camera_euler_angles: ", camera_euler_angles)
-    print("rotation_matrix: ", rotation_matrix)
-    r = R.from_euler("xyz", camera_euler_angles, degrees=True)
-    camera_initial_vec = r.as_rotvec()
-    print("camera_initial_vec: ", camera_initial_vec)
-    rotation_matrix_xyz = rot_matrix_zyx_to_xyz(rotation_matrix)
-    print("rotation_matrix_xyz: ", rotation_matrix_xyz)
-    inv_rotation_matrix_xyz = np.linalg.inv(rotation_matrix_xyz)
-    print("inv_rotation_matrix_xyz: ", inv_rotation_matrix_xyz)
-    camera_new_vec = inv_rotation_matrix_xyz.dot(camera_initial_vec)
-    print("camera_new_vec: ", camera_new_vec)
-    new_r = R.from_rotvec(camera_new_vec)
-    new_camera_euler_angles = new_r.as_euler("xyz", degrees=True)
-    print("new_camera_euler_angles: ", new_camera_euler_angles)
-    print("finished")
-    return new_camera_euler_angles
 
 
 def rot_matrix_zyx_to_xyz(matrixZYX):

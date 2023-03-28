@@ -22,11 +22,7 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
-from ._util import (
-    get_affine_matrix_from_landmarks,
-    inverse_rotation_of_camera,
-    mid_point_of_shortest_line,
-)
+from ._util import get_affine_matrix_from_landmarks, mid_point_of_shortest_line
 
 if TYPE_CHECKING:
     pass
@@ -272,12 +268,7 @@ class MainWidget(QWidget):
             self.overlay_image_layer.visible = False
 
     def align_viewers_btn_clicked(self):
-        # TODO: incorrect transformation
-        new_camera_euler_angles = inverse_rotation_of_camera(
-            self.src_transformation_matrix[:3, :3],
-            self.tgt_viewer.camera.angles,
-        )
-        self.src_viewer.camera.angles = new_camera_euler_angles
+        self.src_viewer.camera = self.tgt_viewer.camera.angles
 
     def landmark_list_box_item_current_row_changed(self):
         row = self.landmark_list_box.currentRow()
