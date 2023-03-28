@@ -200,6 +200,7 @@ class MainWidget(QWidget):
                             new_point = mid_point_of_shortest_line(
                                 existed_line, new_line
                             )
+                            self.src_line = np.empty((0, 2, 3))
                             self.src_lines_layer.data = []
                             # if src is view in transformed
                             if self.src_transform_checkbox.isChecked():
