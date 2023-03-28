@@ -211,7 +211,7 @@ class MainWidget(QWidget):
                                 )
                                 print(new_point)
                             self.src_landmarks = np.append(
-                                self.src_landmarks, [new_point]
+                                self.src_landmarks, [new_point], axis=0
                             )
                             self.refresh_src_points()
 
@@ -255,7 +255,7 @@ class MainWidget(QWidget):
                             )
                             self.tgt_lines_layer.data = []
                             self.tgt_landmarks = np.append(
-                                self.tgt_landmarks, [new_point]
+                                self.tgt_landmarks, [new_point], axis=0
                             )
                             self.refresh_tgt_points()
 
