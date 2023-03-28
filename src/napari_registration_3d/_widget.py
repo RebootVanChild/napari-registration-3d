@@ -197,14 +197,21 @@ class MainWidget(QWidget):
                             self.src_lines_layer.data = []
                             # if src is view in transformed
                             if self.src_transform_checkbox.isChecked():
+                                print(new_point)
                                 new_point = np.dot(
                                     np.linalg.inv(
                                         self.src_transformation_matrix
                                     ),
-                                    new_point,
+                                    np.append(new_point, 1),
+                                )[:1]
+                                print(
+                                    np.linalg.inv(
+                                        self.src_transformation_matrix
+                                    )
                                 )
+                                print(new_point)
                             self.src_landmarks = np.append(
-                                self.src_landmarks, new_point
+                                self.src_landmarks, [new_point]
                             )
                             self.refresh_src_points()
 
@@ -248,7 +255,7 @@ class MainWidget(QWidget):
                             )
                             self.tgt_lines_layer.data = []
                             self.tgt_landmarks = np.append(
-                                self.tgt_landmarks, new_point
+                                self.tgt_landmarks, [new_point]
                             )
                             self.refresh_tgt_points()
 
