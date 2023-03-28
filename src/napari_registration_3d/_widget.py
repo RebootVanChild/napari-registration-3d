@@ -203,7 +203,7 @@ class MainWidget(QWidget):
                                         self.src_transformation_matrix
                                     ),
                                     np.append(new_point, 1),
-                                )[:1]
+                                )[:-1]
                                 print(
                                     np.linalg.inv(
                                         self.src_transformation_matrix
