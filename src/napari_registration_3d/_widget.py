@@ -49,6 +49,8 @@ class MainWidget(QWidget):
         self.tgt_physical_pixel_size = None
 
         self.landmark_pair_index = 0
+        self.src_landmarks = np.empty((0, 3))
+        self.tgt_landmarks = np.empty((0, 3))
         # matrix calculated to apply on src image to align
         self.src_transformation_matrix = np.array(
             [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -81,23 +83,30 @@ class MainWidget(QWidget):
         clear_line_pair_selection_btn.clicked.connect(
             self.clear_point_pair_selection
         )
-        delete_line_pair_btn = QPushButton("Delete landmark pair")
-        delete_line_pair_btn.clicked.connect(self.delete_line_pair)
+        delete_landmark_pair_btn = QPushButton("Delete landmark pair")
+        delete_landmark_pair_btn.clicked.connect(self.delete_line_pair)
         hbox_landmark_list_box_controls.addWidget(
             clear_line_pair_selection_btn
         )
-        hbox_landmark_list_box_controls.addWidget(delete_line_pair_btn)
+        hbox_landmark_list_box_controls.addWidget(delete_landmark_pair_btn)
+
+        hbox_view_controls = QHBoxLayout()
+        align_viewers_btn = QPushButton("Align viewers")
+        align_viewers_btn.clicked.connect(self.align_viewers_btn_clicked)
+        self.src_transform_checkbox = QCheckBox("Transform source image")
+        self.src_transform_checkbox.stateChanged.connect(
+            self.set_src_transform
+        )
+        hbox_view_controls.addWidget(align_viewers_btn)
+        hbox_view_controls.addWidget(self.src_transform_checkbox)
 
         hbox_overlay_controls = QHBoxLayout()
         align_images_btn = QPushButton("Align images")
         align_images_btn.clicked.connect(self.align_images_btn_clicked)
-        self.overlay_btn = QCheckBox("Overlay")
-        self.overlay_btn.stateChanged.connect(self.set_overlay_visibility)
+        self.overlay_checkbox = QCheckBox("Overlay")
+        self.overlay_checkbox.stateChanged.connect(self.set_overlay_visibility)
         hbox_overlay_controls.addWidget(align_images_btn)
-        hbox_overlay_controls.addWidget(self.overlay_btn)
-
-        align_viewers_btn = QPushButton("Align viewers")
-        align_viewers_btn.clicked.connect(self.align_viewers_btn_clicked)
+        hbox_overlay_controls.addWidget(self.overlay_checkbox)
 
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
@@ -105,7 +114,7 @@ class MainWidget(QWidget):
         main_layout.addRow(start_btn)
         main_layout.addRow(self.landmark_list_box)
         main_layout.addRow(hbox_landmark_list_box_controls)
-        main_layout.addRow(align_viewers_btn)
+        main_layout.addRow(hbox_view_controls)
         main_layout.addRow(hbox_overlay_controls)
         self.setLayout(main_layout)
 
@@ -163,9 +172,7 @@ class MainWidget(QWidget):
             @self.src_image_layer.mouse_double_click_callbacks.append
             def src_viewer_on_click(layer, event):
                 # if src points is no more than tgt points
-                if len(self.src_points_layer.data) <= len(
-                    self.tgt_points_layer.data
-                ):
+                if len(self.src_landmarks) <= len(self.tgt_landmarks):
                     near_point, far_point = layer.get_ray_intersections(
                         event.position,
                         event.view_direction,
@@ -188,11 +195,25 @@ class MainWidget(QWidget):
                                 existed_line, new_line
                             )
                             self.src_lines_layer.data = []
-                            self.src_points_layer.add(new_point)
+                            # if src is view in transformed
+                            if self.src_transform_checkbox.isChecked():
+                                new_point = np.dot(
+                                    np.linalg.inv(
+                                        self.src_transformation_matrix
+                                    ),
+                                    new_point,
+                                )
+                            self.src_landmarks = np.append(
+                                self.src_landmarks, new_point
+                            )
+                            self.refresh_src_points()
+
+                            # self.src_points_layer.add(new_point)
+
                             # if src points match tgt points
                             # new pair is created
-                            if len(self.src_points_layer.data) == len(
-                                self.tgt_points_layer.data
+                            if len(self.src_landmarks) == len(
+                                self.tgt_landmarks
                             ):
                                 self.landmark_pair_index += 1
                                 self.landmark_list_box.addItem(
@@ -203,9 +224,7 @@ class MainWidget(QWidget):
             @self.tgt_image_layer.mouse_double_click_callbacks.append
             def tgt_viewer_on_click(layer, event):
                 # if tgt points is no more than src points
-                if len(self.tgt_points_layer.data) <= len(
-                    self.src_points_layer.data
-                ):
+                if len(self.tgt_landmarks) <= len(self.src_landmarks):
                     near_point, far_point = layer.get_ray_intersections(
                         event.position,
                         event.view_direction,
@@ -228,11 +247,17 @@ class MainWidget(QWidget):
                                 existed_line, new_line
                             )
                             self.tgt_lines_layer.data = []
-                            self.tgt_points_layer.add(new_point)
+                            self.tgt_landmarks = np.append(
+                                self.tgt_landmarks, new_point
+                            )
+                            self.refresh_tgt_points()
+
+                            # self.tgt_points_layer.add(new_point)
+
                             # if tgt points match src points
                             # new pair is created
-                            if len(self.tgt_points_layer.data) == len(
-                                self.src_points_layer.data
+                            if len(self.tgt_landmarks) == len(
+                                self.src_landmarks
                             ):
                                 self.landmark_pair_index += 1
                                 self.landmark_list_box.addItem(
@@ -255,14 +280,37 @@ class MainWidget(QWidget):
     def align_images_btn_clicked(self):
         print("affine matrix:")
         self.src_transformation_matrix = get_affine_matrix_from_landmarks(
-            self.src_points_layer.data, self.tgt_points_layer.data
+            self.src_landmarks, self.tgt_landmarks
         )
         print(self.src_transformation_matrix)
         self.overlay_image_layer.affine = self.src_transformation_matrix
-        self.overlay_btn.setChecked(True)
+        self.overlay_checkbox.setChecked(True)
+
+    def set_src_transform(self):
+        if self.src_transform_checkbox.isChecked():
+            self.src_image_layer.affine = self.src_transformation_matrix
+        else:
+            self.src_image_layer.affine = np.array(
+                [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+            )
+        self.refresh_src_points()
+
+    def refresh_src_points(self):
+        if self.src_transform_checkbox.isChecked():
+            ones = np.ones((len(self.src_landmarks), 1))
+            transformed_src_points = np.dot(
+                self.src_transformation_matrix,
+                np.hstack((self.src_landmarks, ones)),
+            )[:-1].T
+            self.src_points_layer.data = transformed_src_points
+        else:
+            self.src_points_layer.data = self.src_landmarks
+
+    def refresh_tgt_points(self):
+        self.tgt_points_layer.data = self.tgt_landmarks
 
     def set_overlay_visibility(self):
-        if self.overlay_btn.isChecked():
+        if self.overlay_checkbox.isChecked():
             self.overlay_image_layer.visible = True
         else:
             self.overlay_image_layer.visible = False
@@ -285,12 +333,16 @@ class MainWidget(QWidget):
     def clear_point_pair_selection(self):
         self.landmark_list_box.setCurrentRow(-1)
 
-    def delete_line_pair(self):
+    def delete_landmark_pair(self):
         row = self.landmark_list_box.currentRow()
         if row != -1:
-            self.src_points_layer.selected_data = {row}
-            self.tgt_points_layer.selected_data = {row}
-            self.src_points_layer.remove_selected()
-            self.tgt_points_layer.remove_selected()
+            self.src_landmarks = np.delete(self.src_landmarks, row, 0)
+            self.tgt_landmarks = np.delete(self.tgt_landmarks, row, 0)
+            self.refresh_src_points()
+            self.refresh_tgt_points()
+            # self.src_points_layer.selected_data = {row}
+            # self.tgt_points_layer.selected_data = {row}
+            # self.src_points_layer.remove_selected()
+            # self.tgt_points_layer.remove_selected()
             self.clear_point_pair_selection()
             self.landmark_list_box.takeItem(row)
