@@ -307,7 +307,7 @@ class MainWidget(QWidget):
             ones = np.ones((len(self.src_landmarks), 1))
             transformed_src_points = np.dot(
                 self.src_transformation_matrix,
-                np.hstack((self.src_landmarks, ones)),
+                np.hstack((self.src_landmarks, ones)).T,
             )[:-1].T
             self.src_points_layer.data = transformed_src_points
         else:
