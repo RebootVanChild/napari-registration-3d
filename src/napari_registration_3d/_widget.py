@@ -299,7 +299,7 @@ class MainWidget(QWidget):
             fileName, _ = QFileDialog.getOpenFileName(
                 self, "Select Landmarks File", "", "CSV Files (*.csv)"
             )
-            self.tgt_file_path.setText(fileName)
+            self.landmarks_file_path.setText(fileName)
 
     def align_images_btn_clicked(self):
         print("affine matrix:")
