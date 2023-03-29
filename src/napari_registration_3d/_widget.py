@@ -61,16 +61,24 @@ class MainWidget(QWidget):
 
         self.src_file_path = QLineEdit(self)
         self.tgt_file_path = QLineEdit(self)
+        self.landmarks_file_path = QLineEdit(self)
         src_browse_btn = QPushButton("Browse")
         src_browse_btn.clicked.connect(partial(self.select_file, "source"))
         tgt_browse_btn = QPushButton("Browse")
         tgt_browse_btn.clicked.connect(partial(self.select_file, "target"))
+        landmarks_browse_btn = QPushButton("Browse")
+        landmarks_browse_btn.clicked.connect(
+            partial(self.select_file, "landmarks")
+        )
         hbox_select_src_file = QHBoxLayout()
         hbox_select_src_file.addWidget(self.src_file_path)
         hbox_select_src_file.addWidget(src_browse_btn)
         hbox_select_tgt_file = QHBoxLayout()
         hbox_select_tgt_file.addWidget(self.tgt_file_path)
         hbox_select_tgt_file.addWidget(tgt_browse_btn)
+        hbox_select_landmarks_file = QHBoxLayout()
+        hbox_select_landmarks_file.addWidget(self.landmarks_file_path)
+        hbox_select_landmarks_file.addWidget(landmarks_browse_btn)
         start_btn = QPushButton("Start")
         start_btn.clicked.connect(self.load_images)
 
@@ -112,6 +120,7 @@ class MainWidget(QWidget):
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
+        main_layout.addRow("Landmarks", hbox_select_landmarks_file)
         main_layout.addRow(start_btn)
         main_layout.addRow(self.landmark_list_box)
         main_layout.addRow(hbox_landmark_list_box_controls)
@@ -168,6 +177,9 @@ class MainWidget(QWidget):
             # set layer selection to image
             self.src_viewer.layers.selection = {self.src_image_layer}
             self.tgt_viewer.layers.selection = {self.tgt_image_layer}
+            # load landmarks from file
+            if self.landmarks_file_path.text() != "":
+                self.load_landmarks_file(self.landmarks_file_path.text())
 
             # callback func, called on mouse click when image layer is active
             @self.src_image_layer.mouse_double_click_callbacks.append
@@ -283,6 +295,11 @@ class MainWidget(QWidget):
                 self, "Select Target Image", "", "CZI Files (*.czi)"
             )
             self.tgt_file_path.setText(fileName)
+        if file_type == "landmarks":
+            fileName, _ = QFileDialog.getOpenFileName(
+                self, "Select Landmarks File", "", "CSV Files (*.csv)"
+            )
+            self.tgt_file_path.setText(fileName)
 
     def align_images_btn_clicked(self):
         print("affine matrix:")
@@ -370,3 +387,26 @@ class MainWidget(QWidget):
             # self.tgt_points_layer.remove_selected()
             self.clear_point_pair_selection()
             self.landmark_list_box.takeItem(row)
+
+    def load_landmarks_file(self, landmarks_path):
+        # TODO: make it compatible with bigwarp
+        landmarks = np.loadtxt(
+            landmarks_path,
+            delimiter=",",
+            converters=lambda x: float(eval(x)),
+        )
+        for i in range(0, len(landmarks)):
+            self.src_landmarks = np.append(
+                self.src_landmarks, landmarks[i, [2, 1, 0]], axis=0
+            )
+            self.refresh_src_points()
+            self.tgt_landmarks = np.append(
+                self.tgt_landmarks, landmarks[i, [5, 4, 3]], axis=0
+            )
+            self.refresh_tgt_points()
+            self.landmark_pair_index += 1
+            self.landmark_list_box.addItem(
+                "landmark pair " + str(self.landmark_pair_index)
+            )
+
+    # def save_landmarks_file(self):
