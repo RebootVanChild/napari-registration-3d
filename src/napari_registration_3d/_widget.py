@@ -117,6 +117,9 @@ class MainWidget(QWidget):
         hbox_overlay_controls.addWidget(align_images_btn)
         hbox_overlay_controls.addWidget(self.overlay_checkbox)
 
+        save_landmarks_btn = QPushButton("Save landmarks")
+        save_landmarks_btn.clicked.connect(self.save_landmarks_to_file)
+
         main_layout = QFormLayout()
         main_layout.addRow("Source image", hbox_select_src_file)
         main_layout.addRow("Target image", hbox_select_tgt_file)
@@ -126,6 +129,7 @@ class MainWidget(QWidget):
         main_layout.addRow(hbox_landmark_list_box_controls)
         main_layout.addRow(hbox_view_controls)
         main_layout.addRow(hbox_overlay_controls)
+        main_layout.addRow(save_landmarks_btn)
         self.setLayout(main_layout)
 
     def load_images(self):
@@ -395,7 +399,7 @@ class MainWidget(QWidget):
             delimiter=",",
             converters=lambda x: float(eval(x)),
         )
-        for i in range(0, len(landmarks)):
+        for i in range(len(landmarks)):
             self.src_landmarks = np.append(
                 self.src_landmarks, [landmarks[i, [2, 1, 0]]], axis=0
             )
@@ -409,4 +413,30 @@ class MainWidget(QWidget):
                 "landmark pair " + str(self.landmark_pair_index)
             )
 
-    # def save_landmarks_file(self):
+    def save_landmarks_to_file(self):
+        fileName, _ = QFileDialog.getSaveFileName(
+            self, "Save Landmarks", "", "CSV Files (*.csv)"
+        )
+        if fileName != "":
+            file = open(fileName, "w")
+            text = ""
+            for i in range(len(self.tgt_landmarks)):
+                # in xyz order
+                text += (
+                    str(self.src_landmarks[i][2])
+                    + ","
+                    + str(self.src_landmarks[i][1])
+                    + ","
+                    + str(self.src_landmarks[i][0])
+                    + ","
+                )
+                text += (
+                    str(self.tgt_landmarks[i][2])
+                    + ","
+                    + str(self.tgt_landmarks[i][1])
+                    + ","
+                    + str(self.tgt_landmarks[i][0])
+                    + "\n"
+                )
+            file.write(text)
+            file.close()
