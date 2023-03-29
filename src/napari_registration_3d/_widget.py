@@ -397,11 +397,11 @@ class MainWidget(QWidget):
         )
         for i in range(0, len(landmarks)):
             self.src_landmarks = np.append(
-                self.src_landmarks, landmarks[i, [2, 1, 0]], axis=0
+                self.src_landmarks, [landmarks[i, [2, 1, 0]]], axis=0
             )
             self.refresh_src_points()
             self.tgt_landmarks = np.append(
-                self.tgt_landmarks, landmarks[i, [5, 4, 3]], axis=0
+                self.tgt_landmarks, [landmarks[i, [5, 4, 3]]], axis=0
             )
             self.refresh_tgt_points()
             self.landmark_pair_index += 1
