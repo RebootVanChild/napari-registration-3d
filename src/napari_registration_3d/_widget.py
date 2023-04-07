@@ -436,6 +436,7 @@ class MainWidget(QWidget):
             landmarks_path,
             delimiter=",",
             converters=lambda x: float(eval(x)),
+            usecols=(2, 3, 4, 5, 6, 7),
         )
         for i in range(len(landmarks)):
             self.src_landmarks = np.append(
@@ -460,6 +461,7 @@ class MainWidget(QWidget):
             text = ""
             for i in range(len(self.tgt_landmarks)):
                 # in xyz order
+                text += "Pt-" + str(i) + "," + "TRUE" + ","
                 text += (
                     str(self.src_landmarks[i][2])
                     + ","
