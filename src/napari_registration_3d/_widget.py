@@ -346,6 +346,7 @@ class MainWidget(QWidget):
                 [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
             )
         self.refresh_src_points()
+        self.refresh_src_lines()
 
     def refresh_src_lines(self):
         # if src_lines is not empty
