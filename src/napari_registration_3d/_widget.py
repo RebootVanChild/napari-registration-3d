@@ -39,12 +39,14 @@ class MainWidget(QWidget):
         self.src_viewer = None
         self.src_image_layer = None
         self.src_lines_layer = None
+        self.src_marker_layer = None
         self.src_points_layer = None
         self.src_physical_pixel_size = None
         # self.tgt_viewer = None
         self.tgt_viewer = napari_viewer
         self.tgt_image_layer = None
         self.tgt_lines_layer = None
+        self.tgt_marker_layer = None
         self.tgt_points_layer = None
         self.tgt_physical_pixel_size = None
 
@@ -171,6 +173,13 @@ class MainWidget(QWidget):
             self.tgt_lines_layer = self.tgt_viewer.add_shapes(
                 ndim=3, shape_type="line", name="temp line"
             )
+            # marker layer
+            self.src_marker_layer = self.src_viewer.add_points(
+                ndim=3, name="Marker"
+            )
+            self.tgt_marker_layer = self.tgt_viewer.add_points(
+                ndim=3, name="Marker"
+            )
             # point layer
             self.src_points_layer = self.src_viewer.add_points(
                 ndim=3, name="Landmarks"
@@ -208,6 +217,11 @@ class MainWidget(QWidget):
                             self.src_lines_layer.add(
                                 new_line, shape_type="line"
                             )
+                            self.src_marker_layer.data = [
+                                new_line[0],
+                                new_line[1],
+                            ]
+
                             self.refresh_src_lines()
                         # if already a line exist
                         else:
@@ -218,6 +232,8 @@ class MainWidget(QWidget):
                             )
                             self.src_line = np.empty((0, 2, 3))
                             self.src_lines_layer.data = []
+
+                            self.src_marker_layer.data = []
                             # if src is view in transformed
                             # if self.src_transform_checkbox.isChecked():
                             #     new_point = np.dot(
@@ -263,6 +279,10 @@ class MainWidget(QWidget):
                             self.tgt_lines_layer.add(
                                 new_line, shape_type="line"
                             )
+                            self.tgt_marker_layer.data = [
+                                new_line[0],
+                                new_line[1],
+                            ]
                         # if already a line exist
                         else:
                             existed_line = self.tgt_lines_layer.data[0]
@@ -270,6 +290,9 @@ class MainWidget(QWidget):
                                 existed_line, new_line
                             )
                             self.tgt_lines_layer.data = []
+
+                            self.tgt_marker_layer.data = []
+
                             self.tgt_landmarks = np.append(
                                 self.tgt_landmarks, [new_point], axis=0
                             )
