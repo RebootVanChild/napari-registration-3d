@@ -217,10 +217,10 @@ class MainWidget(QWidget):
                             self.src_lines_layer.add(
                                 new_line, shape_type="line"
                             )
-                            self.src_marker_layer.data = [
-                                new_line[0],
-                                new_line[1],
-                            ]
+                            # self.src_marker_layer.data = [
+                            #     new_line[0],
+                            #     new_line[1],
+                            # ]
 
                             self.refresh_src_lines()
                         # if already a line exist
@@ -232,7 +232,6 @@ class MainWidget(QWidget):
                             )
                             self.src_line = np.empty((0, 2, 3))
                             self.src_lines_layer.data = []
-
                             self.src_marker_layer.data = []
                             # if src is view in transformed
                             # if self.src_transform_checkbox.isChecked():
@@ -359,6 +358,10 @@ class MainWidget(QWidget):
                     np.hstack((existed_line, ones)).T,
                 )[:-1].T
                 self.src_lines_layer.data = transformed_existed_line
+                self.src_marker_layer.data = [
+                    transformed_existed_line[0],
+                    transformed_existed_line[1],
+                ]
             else:
                 self.src_lines_layer.data = self.src_line
 
