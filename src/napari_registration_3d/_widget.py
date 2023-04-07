@@ -358,23 +358,18 @@ class MainWidget(QWidget):
                     self.src_transformation_matrix,
                     np.hstack((existed_line, ones)).T,
                 )[:-1].T
-                self.src_lines_layer.data = transformed_existed_line
-                print(transformed_existed_line)
-                print(self.src_lines_layer.data)
+                self.src_lines_layer.data = [transformed_existed_line]
                 self.src_marker_layer.data = [
                     transformed_existed_line[0],
                     transformed_existed_line[1],
                 ]
-                print(self.src_marker_layer.data)
             else:
-                self.src_lines_layer.data = self.src_line
-                print(self.src_line)
-                print(self.src_lines_layer.data)
+                existed_line = self.src_line[0]
+                self.src_lines_layer.data = [existed_line]
                 self.src_marker_layer.data = [
-                    self.src_line[0],
-                    self.src_line[1],
+                    existed_line[0],
+                    existed_line[1],
                 ]
-                print(self.src_marker_layer.data)
 
     def refresh_src_points(self):
         if self.src_transform_checkbox.isChecked():
