@@ -150,7 +150,7 @@ class MainWidget(QWidget):
             self.tgt_viewer.open(self.tgt_file_path.text())
             self.tgt_image_layer = self.tgt_viewer.layers[0]
             self.tgt_image_layer.name = "Target image"
-            self.tgt_image_layer.colormap = "green"
+            self.tgt_image_layer.colormap = "blue"
             # overlay image
             self.tgt_viewer.open(self.src_file_path.text())
             self.overlay_image_layer = self.tgt_viewer.layers[1]
