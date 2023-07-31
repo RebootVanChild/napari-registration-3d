@@ -142,17 +142,20 @@ class MainWidget(QWidget):
             self.tgt_viewer.dims.ndisplay = 3
             # load images
             # source image
-            self.src_viewer.open(self.src_file_path.text())
+            self.src_viewer.open(
+                self.src_file_path.text(), plugin='napari-aicsimageio')
             self.src_image_layer = self.src_viewer.layers[0]
             self.src_image_layer.name = "Source image"
             self.src_image_layer.colormap = "red"
             # target image
-            self.tgt_viewer.open(self.tgt_file_path.text())
+            self.tgt_viewer.open(
+                self.tgt_file_path.text(), plugin='napari-aicsimageio')
             self.tgt_image_layer = self.tgt_viewer.layers[0]
             self.tgt_image_layer.name = "Target image"
             self.tgt_image_layer.colormap = "blue"
             # overlay image
-            self.tgt_viewer.open(self.src_file_path.text())
+            self.tgt_viewer.open(
+                self.src_file_path.text(), plugin='napari-aicsimageio')
             self.overlay_image_layer = self.tgt_viewer.layers[1]
             self.overlay_image_layer.name = "Aligned image"
             self.overlay_image_layer.colormap = "red"
